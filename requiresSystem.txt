@@ -1,0 +1,8 @@
+AHHHH
+Mais uma ideia
+Dá pra fazer tipo um sistema com todo o estado de um paciente específico, algo que teríamos que fazer exame físico a cada 2 horas na internação e até menos na urgência
+Como batimentos cardíacos, glicose e etc
+Daria pra tentar até criar algum equipamento pra deixar no animal e conectar no paciente
+Sistema***
+Ai aparecesse algum alerta se estivesse fora do normal
+Ou se estivesse com perigo de estar
