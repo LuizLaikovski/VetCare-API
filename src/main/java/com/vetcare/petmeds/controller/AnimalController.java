@@ -3,27 +3,36 @@ package com.vetcare.petmeds.controller;
 import com.vetcare.petmeds.dto.ResponseDTO;
 import com.vetcare.petmeds.model.Animal;
 import com.vetcare.petmeds.service.AnimalService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-@RestController("/animal")
+@RestController
+@RequestMapping("/animal")
+@AllArgsConstructor
 public class AnimalController {
     private AnimalService animalService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseDTO createAnimal(@RequestBody Animal animal) {
         animalService.createNewAnimal(animal);
         return new ResponseDTO("Animal cadastrado com sucesso");
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/createAll")
+    public ResponseDTO createNewAnimals(@RequestBody List<Animal> animals) {
+        animalService.createAnimals(animals);
+        return  new ResponseDTO("Animal cadastrado com sucesso");
+    }
+
+    @GetMapping("/id/{id}")
     public Animal getById(@PathVariable Long id) {
         return animalService.getById(id);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Animal> getAllAnimals() {
         return animalService.getAll();
     }
@@ -33,15 +42,15 @@ public class AnimalController {
         return animalService.getByName(name);
     }
 
-    @PutMapping
-    public ResponseDTO updateAnimal(@RequestBody Animal animal) {
-        animalService.updateAnimal(animal);
+    @PutMapping("/edit/{id}")
+    public ResponseDTO updateAnimal(@PathVariable Long id, @RequestBody Animal animal) {
+        animalService.updateAnimal(id, animal);
         return new ResponseDTO("Animal atualizado com sucesso");
     }
 
-    @DeleteMapping
-    public ResponseDTO deleteAnimal(@RequestBody Animal animal) {
-        animalService.deleteById(animal.getId());
+    @DeleteMapping("/{id}")
+    public ResponseDTO deleteAnimal(@PathVariable Long id) {
+        animalService.deleteById(id);
         return new ResponseDTO("Animal deletado com sucesso");
     }
 }

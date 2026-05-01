@@ -31,9 +31,9 @@ public class AnimalService {
         return animalRepository.save(animal);
     }
 
-    public Animal updateAnimal(Animal animal) {
+    public Animal updateAnimal(Long id, Animal animal) {
 
-        Animal existing = getById(animal.getId());
+        Animal existing = getById(id);
 
         if (animal.getName() != null) {
             existing.setName(animal.getName());
@@ -61,5 +61,13 @@ public class AnimalService {
     public ResponseDTO deleteById(Long id) {
         animalRepository.deleteById(id);
         return new ResponseDTO("Animal do id "+ id +" deletado com sucesso");
+    }
+
+    public ResponseDTO createAnimals(List<Animal> animals) {
+        for (Animal animal : animals) {
+            createNewAnimal(animal);
+        }
+
+        return new ResponseDTO("Os "+ animals.toArray().length +" foram cadastrado com sucesso");
     }
 }
