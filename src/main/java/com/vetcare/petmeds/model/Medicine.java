@@ -1,5 +1,6 @@
 package com.vetcare.petmeds.model;
 
+import com.vetcare.petmeds.utilities.Type;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class Medicine {
     @Column(unique = true)
     private String name;
     private String manufacturer; // Fabricante
-    private String type; // tipo compromido, pomada, liquido
+    private Type type; // tipo compromido, pomada, liquido
     private String indicatedSpecies;  // especies indicados
     private String dosage; // dosagem
 
