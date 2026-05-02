@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.utilities;
 
-public enum Type {
+public enum TypeMedicine {
     pill,
     utilities,
     liquid,
