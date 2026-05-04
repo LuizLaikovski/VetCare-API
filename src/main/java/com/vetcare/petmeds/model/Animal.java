@@ -17,8 +17,13 @@ public class Animal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Enumerated(EnumType.STRING)
     private Specie specie; // cachorro, gato
     private String race; // raça
     private Integer age;
     private Double weight; // peso
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 }
