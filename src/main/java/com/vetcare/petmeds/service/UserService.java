@@ -6,7 +6,7 @@ import com.vetcare.petmeds.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -15,7 +15,11 @@ public class UserService {
 
     public ResponseDTO newUser(User user) {
         userRepository.save(user);
-        return new ResponseDTO(user);
+        return new ResponseDTO("Usuario Criado com sucesso!");
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     public User getUserById(Long id) {

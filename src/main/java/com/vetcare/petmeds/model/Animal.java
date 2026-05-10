@@ -1,5 +1,6 @@
 package com.vetcare.petmeds.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vetcare.petmeds.utilities.Specie;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class Animal {
     private Double weight; // peso
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "owner_id")
     private User owner;
 }
