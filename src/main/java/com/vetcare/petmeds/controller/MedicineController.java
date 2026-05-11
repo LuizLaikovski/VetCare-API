@@ -20,8 +20,8 @@ public class MedicineController {
         return medicineService.getMedicineById(id);
     }
 
-    @GetMapping("/{name}")
-    public List<Medicine> getMedicineByName(@RequestParam String medicineName) {
+    @GetMapping("/name/{name}")
+    public List<Medicine> getMedicineByName(@PathVariable String name, @RequestParam String medicineName) {
         return medicineService.getByName(medicineName);
     }
 

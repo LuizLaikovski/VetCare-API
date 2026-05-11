@@ -60,7 +60,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Usuario cadastrado com sucesso"));
+                .andExpect(jsonPath("$.response").value("Usuario cadastrado com sucesso"));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Login realizado com sucesso!"));
+                .andExpect(jsonPath("$.response").value("Login realizado com sucesso!"));
     }
 
     @Test
@@ -90,6 +90,6 @@ public class UserControllerTest {
 
         mockMvc.perform(delete("/user/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("O usuario foi removido com sucesso!"));
+                .andExpect(jsonPath("$.response").value("O usuario foi removido com sucesso!"));
     }
 }

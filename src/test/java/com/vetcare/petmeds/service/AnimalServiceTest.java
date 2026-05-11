@@ -118,7 +118,7 @@ public class AnimalServiceTest {
 
         ResponseDTO response = animalService.deleteById(1L);
 
-        assertEquals("Animal do id 1 deletado com sucesso", response);
+        assertEquals("Animal do id 1 deletado com sucesso", response.getResponse());
         verify(animalRepository, times(1)).deleteById(1L);
     }
 

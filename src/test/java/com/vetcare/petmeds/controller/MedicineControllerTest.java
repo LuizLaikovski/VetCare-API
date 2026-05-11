@@ -89,6 +89,6 @@ public class MedicineControllerTest {
 
         mockMvc.perform(delete("/medicine/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Medicine deleted successfully"));
+                .andExpect(jsonPath("$.response").value("Medicine deleted successfully"));
     }
 }

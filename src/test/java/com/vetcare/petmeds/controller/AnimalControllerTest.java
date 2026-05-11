@@ -53,7 +53,7 @@ public class AnimalControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(animal)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Animal cadastrado com sucesso"));
+                .andExpect(jsonPath("$.response").value("Animal cadastrado com sucesso"));
     }
 
     @Test
@@ -91,7 +91,7 @@ public class AnimalControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(animal)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Animal atualizado com sucesso"));
+                .andExpect(jsonPath("$.response").value("Animal atualizado com sucesso"));
     }
 
     @Test
@@ -100,6 +100,6 @@ public class AnimalControllerTest {
 
         mockMvc.perform(delete("/animal/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Animal deletado com sucesso"));
+                .andExpect(jsonPath("$.response").value("Animal deletado com sucesso"));
     }
 }
