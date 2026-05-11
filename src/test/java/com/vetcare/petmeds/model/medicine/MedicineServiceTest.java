@@ -1,9 +1,6 @@
-package com.vetcare.petmeds.service;
+package com.vetcare.petmeds.model.medicine;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.Medicine;
-import com.vetcare.petmeds.repository.MedicineRepository;
-import com.vetcare.petmeds.utilities.TypeMedicine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +25,11 @@ public class MedicineServiceTest {
     @InjectMocks
     private MedicineService medicineService;
 
-    private Medicine medicine;
+    private MedicineEntity medicine;
 
     @BeforeEach
     void setUp() {
-        medicine = new Medicine();
+        medicine = new MedicineEntity();
         medicine.setId(1L);
         medicine.setName("Paracetamol");
         medicine.setManufacturer("PharmaCorp");
@@ -45,7 +42,7 @@ public class MedicineServiceTest {
     void getMedicineById_ShouldReturnMedicineWhenExists() {
         when(medicineRepository.findById(1L)).thenReturn(Optional.of(medicine));
 
-        Medicine result = medicineService.getMedicineById(1L);
+        MedicineEntity result = medicineService.getMedicineById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -56,7 +53,7 @@ public class MedicineServiceTest {
     void getMedicineById_ShouldReturnNullWhenNotExists() {
         when(medicineRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Medicine result = medicineService.getMedicineById(1L);
+        MedicineEntity result = medicineService.getMedicineById(1L);
 
         assertNull(result);
         verify(medicineRepository, times(1)).findById(1L);
@@ -64,10 +61,10 @@ public class MedicineServiceTest {
 
     @Test
     void getAllMedicines_ShouldReturnListOfMedicines() {
-        List<Medicine> medicines = Arrays.asList(medicine);
+        List<MedicineEntity> medicines = Arrays.asList(medicine);
         when(medicineRepository.findAll()).thenReturn(medicines);
 
-        List<Medicine> result = medicineService.getAllMedicines();
+        List<MedicineEntity> result = medicineService.getAllMedicines();
 
         assertEquals(1, result.size());
         verify(medicineRepository, times(1)).findAll();
@@ -75,10 +72,10 @@ public class MedicineServiceTest {
 
     @Test
     void getByName_ShouldReturnListOfMedicinesMatchingName() {
-        List<Medicine> medicines = Arrays.asList(medicine);
+        List<MedicineEntity> medicines = Arrays.asList(medicine);
         when(medicineRepository.findByNameContainingIgnoreCase("para")).thenReturn(medicines);
 
-        List<Medicine> result = medicineService.getByName("para");
+        List<MedicineEntity> result = medicineService.getByName("para");
 
         assertEquals(1, result.size());
         assertEquals("Paracetamol", result.get(0).getName());
@@ -87,9 +84,9 @@ public class MedicineServiceTest {
 
     @Test
     void createMedicine_ShouldReturnSavedMedicine() {
-        when(medicineRepository.save(any(Medicine.class))).thenReturn(medicine);
+        when(medicineRepository.save(any(MedicineEntity.class))).thenReturn(medicine);
 
-        Medicine result = medicineService.createMedicine(medicine);
+        MedicineEntity result = medicineService.createMedicine(medicine);
 
         assertNotNull(result);
         assertEquals("Paracetamol", result.getName());
@@ -98,24 +95,24 @@ public class MedicineServiceTest {
 
     @Test
     void createAllsMedicine_ShouldReturnSuccessResponse() {
-        List<Medicine> medicines = Arrays.asList(medicine, new Medicine());
-        when(medicineRepository.save(any(Medicine.class))).thenReturn(medicine);
+        List<MedicineEntity> medicines = Arrays.asList(medicine, new MedicineEntity());
+        when(medicineRepository.save(any(MedicineEntity.class))).thenReturn(medicine);
 
         ResponseDTO response = medicineService.createAllsMedicine(medicines);
 
         assertTrue(response.getResponse().contains("medicamentos foram criados com sucesso"));
-        verify(medicineRepository, times(2)).save(any(Medicine.class));
+        verify(medicineRepository, times(2)).save(any(MedicineEntity.class));
     }
 
     @Test
     void updateMedicine_ShouldReturnUpdatedMedicine() {
-        Medicine updatedInfo = new Medicine();
+        MedicineEntity updatedInfo = new MedicineEntity();
         updatedInfo.setName("Paracetamol Updated");
 
         when(medicineRepository.findById(1L)).thenReturn(Optional.of(medicine));
-        when(medicineRepository.save(any(Medicine.class))).thenReturn(medicine);
+        when(medicineRepository.save(any(MedicineEntity.class))).thenReturn(medicine);
 
-        Medicine result = medicineService.updateMedicine(1L, updatedInfo);
+        MedicineEntity result = medicineService.updateMedicine(1L, updatedInfo);
 
         assertNotNull(result);
         assertEquals("Paracetamol Updated", result.getName());

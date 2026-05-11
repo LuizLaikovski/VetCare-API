@@ -1,8 +1,8 @@
 package com.vetcare.petmeds.controller;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.Medicine;
-import com.vetcare.petmeds.service.MedicineService;
+import com.vetcare.petmeds.model.medicine.MedicineEntity;
+import com.vetcare.petmeds.model.medicine.MedicineService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,30 +16,30 @@ public class MedicineController {
     private MedicineService medicineService;
 
     @GetMapping("/{id}")
-    public Medicine getMedicineById(@PathVariable Long id) {
+    public MedicineEntity getMedicineById(@PathVariable Long id) {
         return medicineService.getMedicineById(id);
     }
 
     @GetMapping("/name/{name}")
-    public List<Medicine> getMedicineByName(@PathVariable String name, @RequestParam String medicineName) {
+    public List<MedicineEntity> getMedicineByName(@PathVariable String name, @RequestParam String medicineName) {
         return medicineService.getByName(medicineName);
     }
 
     @GetMapping("/all")
-    public List<Medicine> getAllMedicine() { return medicineService.getAllMedicines(); }
+    public List<MedicineEntity> getAllMedicine() { return medicineService.getAllMedicines(); }
 
     @PostMapping("/create")
-    public Medicine createMedicine(@RequestBody Medicine medicine) {
+    public MedicineEntity createMedicine(@RequestBody MedicineEntity medicine) {
         return medicineService.createMedicine(medicine);
     }
 
     @PostMapping("/createAll")
-    public ResponseDTO createAllsMedicine(@RequestBody List<Medicine> medicine) {
+    public ResponseDTO createAllsMedicine(@RequestBody List<MedicineEntity> medicine) {
         return medicineService.createAllsMedicine(medicine);
     }
 
     @PutMapping("/{id}")
-    public Medicine updateMedicine(@PathVariable Long id, @RequestBody Medicine medicine) {
+    public MedicineEntity updateMedicine(@PathVariable Long id, @RequestBody MedicineEntity medicine) {
         return medicineService.updateMedicine(id, medicine);
     }
 

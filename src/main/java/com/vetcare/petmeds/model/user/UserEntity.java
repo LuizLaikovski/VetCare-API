@@ -1,7 +1,7 @@
-package com.vetcare.petmeds.model;
+package com.vetcare.petmeds.model.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.vetcare.petmeds.utilities.TypeUser;
+import com.vetcare.petmeds.model.animal.AnimalEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +29,5 @@ public class User {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Animal> animals =  new ArrayList<>();
+    private List<AnimalEntity> animals =  new ArrayList<>();
 }

@@ -1,8 +1,6 @@
-package com.vetcare.petmeds.service;
+package com.vetcare.petmeds.model.user;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.User;
-import com.vetcare.petmeds.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,25 +11,25 @@ import java.util.List;
 public class UserService {
     private UserRepository userRepository;
 
-    public ResponseDTO newUser(User user) {
+    public ResponseDTO newUser(UserEntity user) {
         userRepository.save(user);
         return new ResponseDTO("Usuario Criado com sucesso!");
     }
 
-    public List<User> findAll() {
+    public List<UserEntity> findAll() {
         return userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
+    public UserEntity getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User getUserByEmail(String email) {
+    public UserEntity getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
     public ResponseDTO login(String email, String password) {
-        User user = getUserByEmail(email);
+        UserEntity user = getUserByEmail(email);
 
         if  (user == null) {
             return new ResponseDTO("Este email não possui cadastro!");
@@ -44,8 +42,8 @@ public class UserService {
         return new ResponseDTO("Login realizado com sucesso!");
     }
 
-    public ResponseDTO updateUser(Long id, User user) {
-        User oldUser = getUserById(id);
+    public ResponseDTO updateUser(Long id, UserEntity user) {
+        UserEntity oldUser = getUserById(id);
 
         if (oldUser == null) {
             return new ResponseDTO("Usuário não encontrado!");

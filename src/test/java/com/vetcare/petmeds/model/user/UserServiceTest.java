@@ -1,9 +1,6 @@
-package com.vetcare.petmeds.service;
+package com.vetcare.petmeds.model.user;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.User;
-import com.vetcare.petmeds.repository.UserRepository;
-import com.vetcare.petmeds.utilities.TypeUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +25,11 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    private User user;
+    private UserEntity user;
 
     @BeforeEach
     void setUp() {
-        user = new User();
+        user = new UserEntity();
         user.setId(1L);
         user.setName("John Doe");
         user.setEmail("john@example.com");
@@ -42,7 +39,7 @@ public class UserServiceTest {
 
     @Test
     void newUser_ShouldReturnSuccessResponse() {
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
 
         ResponseDTO response = userService.newUser(user);
 
@@ -52,10 +49,10 @@ public class UserServiceTest {
 
     @Test
     void findAll_ShouldReturnListOfUsers() {
-        List<User> users = Arrays.asList(user);
+        List<UserEntity> users = Arrays.asList(user);
         when(userRepository.findAll()).thenReturn(users);
 
-        List<User> result = userService.findAll();
+        List<UserEntity> result = userService.findAll();
 
         assertEquals(1, result.size());
         assertEquals("John Doe", result.get(0).getName());
@@ -66,7 +63,7 @@ public class UserServiceTest {
     void getUserById_ShouldReturnUserWhenExists() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        User result = userService.getUserById(1L);
+        UserEntity result = userService.getUserById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -77,7 +74,7 @@ public class UserServiceTest {
     void getUserById_ShouldReturnNullWhenNotExists() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        User result = userService.getUserById(1L);
+        UserEntity result = userService.getUserById(1L);
 
         assertNull(result);
         verify(userRepository, times(1)).findById(1L);
@@ -87,7 +84,7 @@ public class UserServiceTest {
     void getUserByEmail_ShouldReturnUserWhenExists() {
         when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
 
-        User result = userService.getUserByEmail("john@example.com");
+        UserEntity result = userService.getUserByEmail("john@example.com");
 
         assertNotNull(result);
         assertEquals("john@example.com", result.getEmail());
@@ -123,11 +120,11 @@ public class UserServiceTest {
 
     @Test
     void updateUser_ShouldReturnSuccessWhenUserExists() {
-        User updatedInfo = new User();
+        UserEntity updatedInfo = new UserEntity();
         updatedInfo.setName("John Updated");
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
 
         ResponseDTO response = userService.updateUser(1L, updatedInfo);
 
@@ -140,10 +137,10 @@ public class UserServiceTest {
     void updateUser_ShouldReturnErrorWhenUserNotFound() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ResponseDTO response = userService.updateUser(1L, new User());
+        ResponseDTO response = userService.updateUser(1L, new UserEntity());
 
         assertEquals("Usuário não encontrado!", response.getResponse());
-        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).save(any(UserEntity.class));
     }
 
     @Test

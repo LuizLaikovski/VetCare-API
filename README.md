@@ -39,6 +39,3 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 *   `POST /user/login`: Realiza login.
 *   `PUT /user/update`: Atualiza um usuário.
 *   `DELETE /user/{id}`: Remove um usuário.
-
-## Contribuidores
-*   [Luiz Rodrigues](https://github.com/luizr) (Desenvolvedor)

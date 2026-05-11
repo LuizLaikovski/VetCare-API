@@ -2,8 +2,8 @@ package com.vetcare.petmeds.controller;
 
 import com.vetcare.petmeds.dto.LoginRequestDTO;
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.User;
-import com.vetcare.petmeds.service.UserService;
+import com.vetcare.petmeds.model.user.UserEntity;
+import com.vetcare.petmeds.model.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,21 +18,21 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/all")
-    public List<User> getALl() { return userService.findAll(); }
+    public List<UserEntity> getALl() { return userService.findAll();  }
 
     @PostMapping("/create")
-    public ResponseDTO create(@RequestBody User user) {
+    public ResponseDTO create(@RequestBody UserEntity user) {
         userService.newUser(user);
         return new ResponseDTO("Usuario cadastrado com sucesso");
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public UserEntity getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @GetMapping("/getEmail")
-    public User getUserByEmail(String email) {
+    public UserEntity getUserByEmail(String email) {
         return userService.getUserByEmail(email);
     }
 
@@ -41,8 +41,8 @@ public class UserController {
         return userService.login(loginRequestDTO.email(), loginRequestDTO.password());
     }
 
-    @PutMapping("/update")
-    public ResponseDTO update(@PathVariable Long id, @RequestBody User user) {
+    @PutMapping("/update/{id}")
+    public ResponseDTO update(@PathVariable Long id, @RequestBody UserEntity user) {
         return userService.updateUser(id, user);
     }
 

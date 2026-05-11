@@ -1,4 +1,4 @@
-package com.vetcare.petmeds.utilities;
+package com.vetcare.petmeds.model.animal;
 
 public enum Specie {
     Cachorro,

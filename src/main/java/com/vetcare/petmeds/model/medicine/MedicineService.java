@@ -1,8 +1,6 @@
-package com.vetcare.petmeds.service;
+package com.vetcare.petmeds.model.medicine;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.Medicine;
-import com.vetcare.petmeds.repository.MedicineRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,31 +11,31 @@ import java.util.List;
 public class MedicineService {
     private MedicineRepository medicineRepository;
 
-    public Medicine getMedicineById(Long id){
+    public MedicineEntity getMedicineById(Long id){
         return medicineRepository.findById(id).orElse(null);
     }
 
-    public List<Medicine> getAllMedicines(){
+    public List<MedicineEntity> getAllMedicines(){
         return medicineRepository.findAll();
     }
 
-    public List<Medicine> getByName(String name) {
+    public List<MedicineEntity> getByName(String name) {
         return medicineRepository.findByNameContainingIgnoreCase(name);
     }
 
-    public Medicine createMedicine(Medicine medicine) {
+    public MedicineEntity createMedicine(MedicineEntity medicine) {
         return medicineRepository.save(medicine);
     }
 
-    public ResponseDTO createAllsMedicine(List<Medicine> medicine) {
-        for (Medicine m : medicine) {
+    public ResponseDTO createAllsMedicine(List<MedicineEntity> medicine) {
+        for (MedicineEntity m : medicine) {
             medicineRepository.save(m);
         }
         return new ResponseDTO(medicine.size() +" medicamentos foram criados com sucesso");
     }
 
-    public Medicine updateMedicine(Long id, Medicine medicine) {
-        Medicine existing = getMedicineById(id);
+    public MedicineEntity updateMedicine(Long id, MedicineEntity medicine) {
+        MedicineEntity existing = getMedicineById(id);
 
         if (medicine.getName() != null) { existing.setName(medicine.getName()); }
         if (medicine.getType() != null) { existing.setType(medicine.getType()); }

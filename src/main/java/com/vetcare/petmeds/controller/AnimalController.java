@@ -1,8 +1,8 @@
 package com.vetcare.petmeds.controller;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.Animal;
-import com.vetcare.petmeds.service.AnimalService;
+import com.vetcare.petmeds.model.animal.AnimalEntity;
+import com.vetcare.petmeds.model.animal.AnimalService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,34 +16,39 @@ public class AnimalController {
     private AnimalService animalService;
 
     @PostMapping("/create")
-    public ResponseDTO createAnimal(@RequestBody Animal animal) {
+    public ResponseDTO createAnimal(@RequestBody AnimalEntity animal) {
         animalService.createNewAnimal(animal);
         return new ResponseDTO("Animal cadastrado com sucesso");
     }
 
     @PostMapping("/createAll")
-    public ResponseDTO createNewAnimals(@RequestBody List<Animal> animals) {
+    public ResponseDTO createNewAnimals(@RequestBody List<AnimalEntity> animals) {
         animalService.createAnimals(animals);
         return  new ResponseDTO("Animal cadastrado com sucesso");
     }
 
+    @PostMapping("/addMedicine")
+    public ResponseDTO addMedicine(@RequestBody Long idAnimal, @RequestBody Long idMedicine) {
+        return animalService.setMedicine(idAnimal, idMedicine);
+    }
+
     @GetMapping("/id/{id}")
-    public Animal getById(@PathVariable Long id) {
+    public AnimalEntity getById(@PathVariable Long id) {
         return animalService.getById(id);
     }
 
     @GetMapping("/all")
-    public List<Animal> getAllAnimals() {
+    public List<AnimalEntity> getAllAnimals() {
         return animalService.getAll();
     }
 
     @GetMapping("/{name}")
-    public Optional<Animal> getByName(@PathVariable String name) {
+    public Optional<AnimalEntity> getByName(@PathVariable String name) {
         return animalService.getByName(name);
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseDTO updateAnimal(@PathVariable Long id, @RequestBody Animal animal) {
+    public ResponseDTO updateAnimal(@PathVariable Long id, @RequestBody AnimalEntity animal) {
         animalService.updateAnimal(id, animal);
         return new ResponseDTO("Animal atualizado com sucesso");
     }

@@ -1,4 +1,4 @@
-package com.vetcare.petmeds.utilities;
+package com.vetcare.petmeds.model.medicine;
 
 public enum TypeMedicine {
     pill,

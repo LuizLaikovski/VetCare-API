@@ -1,9 +1,9 @@
 package com.vetcare.petmeds.controller;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.Medicine;
-import com.vetcare.petmeds.service.MedicineService;
-import com.vetcare.petmeds.utilities.TypeMedicine;
+import com.vetcare.petmeds.model.medicine.MedicineEntity;
+import com.vetcare.petmeds.model.medicine.MedicineService;
+import com.vetcare.petmeds.model.medicine.TypeMedicine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +33,11 @@ public class MedicineControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Medicine medicine;
+    private MedicineEntity medicine;
 
     @BeforeEach
     void setUp() {
-        medicine = new Medicine();
+        medicine = new MedicineEntity();
         medicine.setId(1L);
         medicine.setName("Paracetamol");
         medicine.setType(TypeMedicine.pill);
@@ -63,7 +63,7 @@ public class MedicineControllerTest {
 
     @Test
     void createMedicine_ShouldReturnOk() throws Exception {
-        when(medicineService.createMedicine(any(Medicine.class))).thenReturn(medicine);
+        when(medicineService.createMedicine(any(MedicineEntity.class))).thenReturn(medicine);
 
         mockMvc.perform(post("/medicine/create")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +74,7 @@ public class MedicineControllerTest {
 
     @Test
     void updateMedicine_ShouldReturnOk() throws Exception {
-        when(medicineService.updateMedicine(anyLong(), any(Medicine.class))).thenReturn(medicine);
+        when(medicineService.updateMedicine(anyLong(), any(MedicineEntity.class))).thenReturn(medicine);
 
         mockMvc.perform(put("/medicine/1")
                         .contentType(MediaType.APPLICATION_JSON)

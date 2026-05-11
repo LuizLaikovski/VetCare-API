@@ -1,18 +1,23 @@
-package com.vetcare.petmeds.model;
+package com.vetcare.petmeds.model.animal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.vetcare.petmeds.utilities.Specie;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.vetcare.petmeds.model.medicine.MedicineEntity;
+import com.vetcare.petmeds.model.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_animals")
-public class Animal {
+public class AnimalEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +32,9 @@ public class Animal {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "owner_id")
-    private User owner;
+    private UserEntity owner;
+
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<MedicineEntity> medicine = new ArrayList<>();
 }

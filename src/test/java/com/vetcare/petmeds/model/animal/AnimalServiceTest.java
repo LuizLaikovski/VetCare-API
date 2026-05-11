@@ -1,9 +1,6 @@
-package com.vetcare.petmeds.service;
+package com.vetcare.petmeds.model.animal;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.Animal;
-import com.vetcare.petmeds.repository.AnimalRepository;
-import com.vetcare.petmeds.utilities.Specie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +25,11 @@ public class AnimalServiceTest {
     @InjectMocks
     private AnimalService animalService;
 
-    private Animal animal;
+    private AnimalEntity animal;
 
     @BeforeEach
     void setUp() {
-        animal = new Animal();
+        animal = new AnimalEntity();
         animal.setId(1L);
         animal.setName("Rex");
         animal.setSpecie(Specie.Cachorro);
@@ -43,10 +40,10 @@ public class AnimalServiceTest {
 
     @Test
     void getAll_ShouldReturnListOfAnimals() {
-        List<Animal> animals = Arrays.asList(animal);
+        List<AnimalEntity> animals = Arrays.asList(animal);
         when(animalRepository.findAll()).thenReturn(animals);
 
-        List<Animal> result = animalService.getAll();
+        List<AnimalEntity> result = animalService.getAll();
 
         assertEquals(1, result.size());
         assertEquals("Rex", result.get(0).getName());
@@ -57,7 +54,7 @@ public class AnimalServiceTest {
     void getById_ShouldReturnAnimalWhenExists() {
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
 
-        Animal result = animalService.getById(1L);
+        AnimalEntity result = animalService.getById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -77,7 +74,7 @@ public class AnimalServiceTest {
     void getByName_ShouldReturnAnimalWhenExists() {
         when(animalRepository.findByName("Rex")).thenReturn(Optional.of(animal));
 
-        Optional<Animal> result = animalService.getByName("Rex");
+        Optional<AnimalEntity> result = animalService.getByName("Rex");
 
         assertTrue(result.isPresent());
         assertEquals("Rex", result.get().getName());
@@ -86,9 +83,9 @@ public class AnimalServiceTest {
 
     @Test
     void createNewAnimal_ShouldReturnSavedAnimal() {
-        when(animalRepository.save(any(Animal.class))).thenReturn(animal);
+        when(animalRepository.save(any(AnimalEntity.class))).thenReturn(animal);
 
-        Animal result = animalService.createNewAnimal(animal);
+        AnimalEntity result = animalService.createNewAnimal(animal);
 
         assertNotNull(result);
         assertEquals("Rex", result.getName());
@@ -97,14 +94,14 @@ public class AnimalServiceTest {
 
     @Test
     void updateAnimal_ShouldReturnUpdatedAnimal() {
-        Animal updatedInfo = new Animal();
+        AnimalEntity updatedInfo = new AnimalEntity();
         updatedInfo.setName("Rex Updated");
         updatedInfo.setWeight(32.0);
 
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
-        when(animalRepository.save(any(Animal.class))).thenReturn(animal);
+        when(animalRepository.save(any(AnimalEntity.class))).thenReturn(animal);
 
-        Animal result = animalService.updateAnimal(1L, updatedInfo);
+        AnimalEntity result = animalService.updateAnimal(1L, updatedInfo);
 
         assertNotNull(result);
         assertEquals("Rex Updated", result.getName());
@@ -124,12 +121,12 @@ public class AnimalServiceTest {
 
     @Test
     void createAnimals_ShouldReturnSuccessResponse() {
-        List<Animal> animals = Arrays.asList(animal, new Animal());
-        when(animalRepository.save(any(Animal.class))).thenReturn(animal);
+        List<AnimalEntity> animals = Arrays.asList(animal, new AnimalEntity());
+        when(animalRepository.save(any(AnimalEntity.class))).thenReturn(animal);
 
         ResponseDTO response = animalService.createAnimals(animals);
 
         assertTrue(response.getResponse().contains("cadastrado com sucesso"));
-        verify(animalRepository, times(2)).save(any(Animal.class));
+        verify(animalRepository, times(2)).save(any(AnimalEntity.class));
     }
 }

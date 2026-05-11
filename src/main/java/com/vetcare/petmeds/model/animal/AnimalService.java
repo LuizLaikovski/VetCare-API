@@ -1,8 +1,8 @@
-package com.vetcare.petmeds.service;
+package com.vetcare.petmeds.model.animal;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.Animal;
-import com.vetcare.petmeds.repository.AnimalRepository;
+import com.vetcare.petmeds.model.medicine.MedicineEntity;
+import com.vetcare.petmeds.model.medicine.MedicineRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,27 +13,49 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AnimalService {
     private AnimalRepository animalRepository;
+    private MedicineRepository medicineRepository;
 
-    public List<Animal> getAll() {
+    public List<AnimalEntity> getAll() {
         return animalRepository.findAll();
     }
 
-    public Animal getById(Long id) {
+    public AnimalEntity getById(Long id) {
         return animalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Animal não encontrado"));
     }
 
-    public Optional<Animal> getByName(String name) {
+    public Optional<AnimalEntity> getByName(String name) {
         return animalRepository.findByName(name);
     }
 
-    public Animal createNewAnimal(Animal animal) {
+    public ResponseDTO setMedicine(Long idAnimal, Long idMedicine) {
+        MedicineEntity medicineExist = medicineRepository.getById(idMedicine);
+        AnimalEntity animalExist = animalRepository.getById(idAnimal);
+
+        if (medicineExist == null) {
+            return new ResponseDTO("Medicamento não encontrado");
+        }
+
+        if (animalExist == null) {
+            return new ResponseDTO("Animal não encontrado");
+        }
+
+        animalExist.getMedicine().add(medicineExist);
+
+        medicineExist.setAnimal(animalExist);
+
+        animalRepository.save(animalExist);
+
+        return new ResponseDTO("Medicamento salvo com sucesso");
+    }
+
+    public AnimalEntity createNewAnimal(AnimalEntity animal) {
         return animalRepository.save(animal);
     }
 
-    public Animal updateAnimal(Long id, Animal animal)  {
+    public AnimalEntity updateAnimal(Long id, AnimalEntity animal)  {
 
-        Animal existing = getById(id);
+        AnimalEntity existing = getById(id);
 
         if (animal.getName() != null) {
             existing.setName(animal.getName());
@@ -63,8 +85,8 @@ public class AnimalService {
         return new ResponseDTO("Animal do id "+ id +" deletado com sucesso");
     }
 
-    public ResponseDTO createAnimals(List<Animal> animals) {
-        for (Animal animal : animals) {
+    public ResponseDTO createAnimals(List<AnimalEntity> animals) {
+        for (AnimalEntity animal : animals) {
             createNewAnimal(animal);
         }
 

@@ -2,8 +2,8 @@ package com.vetcare.petmeds.controller;
 
 import com.vetcare.petmeds.dto.LoginRequestDTO;
 import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.User;
-import com.vetcare.petmeds.service.UserService;
+import com.vetcare.petmeds.model.user.UserEntity;
+import com.vetcare.petmeds.model.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +33,11 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private User user;
+    private UserEntity user;
 
     @BeforeEach
     void setUp() {
-        user = new User();
+        user = new UserEntity();
         user.setId(1L);
         user.setName("John Doe");
         user.setEmail("john@example.com");
@@ -54,7 +54,7 @@ public class UserControllerTest {
 
     @Test
     void createUser_ShouldReturnOk() throws Exception {
-        when(userService.newUser(any(User.class))).thenReturn(new ResponseDTO("Usuario cadastrado com sucesso"));
+        when(userService.newUser(any(UserEntity.class))).thenReturn(new ResponseDTO("Usuario cadastrado com sucesso"));
 
         mockMvc.perform(post("/user/create")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -17,9 +17,9 @@ public class DotenvConfig {
                 System.setProperty(entry.getKey(), entry.getValue());
             });
 
-            System.out.println("✅ Arquivo .env carregado com sucesso!");
+            System.out.println("Arquivo .env carregado com sucesso!");
         } catch (Exception e) {
-            System.out.println("⚠️ Arquivo .env não encontrado, usando variáveis de sistema");
+            System.out.println("Arquivo .env não encontrado, usando variáveis de sistema");
         }
     }
 }
