@@ -2,12 +2,16 @@ package com.vetcare.petmeds.model.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vetcare.petmeds.model.animal.AnimalEntity;
+import com.vetcare.petmeds.model.token.TokenEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -20,14 +24,27 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     @Column(unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
+
     @Enumerated(EnumType.STRING)
     private TypeUser typeUser;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private TokenEntity token;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<AnimalEntity> animals =  new ArrayList<>();
+
+    public Collection<? extends GrantedAuthority> getAutorities() {
+        if (this.typeUser == TypeUser.ADM) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
 }

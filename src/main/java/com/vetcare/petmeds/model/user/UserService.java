@@ -1,7 +1,10 @@
 package com.vetcare.petmeds.model.user;
 
 import com.vetcare.petmeds.dto.ResponseDTO;
+import com.vetcare.petmeds.exception.ResourceNotFoundException;
+import com.vetcare.petmeds.exception.UnauthorizedException;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +13,21 @@ import java.util.List;
 @AllArgsConstructor
 public class UserService {
     private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
-    public ResponseDTO newUser(UserEntity user) {
-        userRepository.save(user);
+    public ResponseDTO newUser(UserDTO user) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setName(user.getName());
+        userEntity.setEmail(user.getEmail());
+        userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (user.getTypeUser() == null) {
+            userEntity.setTypeUser(TypeUser.CLIENT);
+        } else {
+            userEntity.setTypeUser(user.getTypeUser());
+        }
+
+        userRepository.save(userEntity);
         return new ResponseDTO("Usuario Criado com sucesso!");
     }
 
@@ -21,22 +36,18 @@ public class UserService {
     }
 
     public UserEntity getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado!"));
     }
 
     public UserEntity getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Este email não possui cadastro!"));
     }
 
     public ResponseDTO login(String email, String password) {
         UserEntity user = getUserByEmail(email);
 
-        if  (user == null) {
-            return new ResponseDTO("Este email não possui cadastro!");
-        }
-
-        if (!user.getPassword().equals(password)) {
-            return new ResponseDTO("Senha Incorreta!");
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new UnauthorizedException("Senha Incorreta!");
         }
 
         return new ResponseDTO("Login realizado com sucesso!");
@@ -44,10 +55,6 @@ public class UserService {
 
     public ResponseDTO updateUser(Long id, UserEntity user) {
         UserEntity oldUser = getUserById(id);
-
-        if (oldUser == null) {
-            return new ResponseDTO("Usuário não encontrado!");
-        }
 
         if (user.getName() != null) {
             oldUser.setName(user.getName());
@@ -58,7 +65,7 @@ public class UserService {
         }
 
         if (user.getPassword() != null) {
-            oldUser.setPassword(user.getPassword());
+            oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
 
         if (user.getTypeUser() != null) {
@@ -71,6 +78,9 @@ public class UserService {
     }
 
     public ResponseDTO deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuário não encontrado!");
+        }
         userRepository.deleteById(id);
         return new ResponseDTO("O usuario foi removido com sucesso!");
     }

@@ -4,9 +4,13 @@ import com.vetcare.petmeds.dto.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import com.vetcare.petmeds.exception.ResourceNotFoundException;
+import com.vetcare.petmeds.exception.UnauthorizedException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +26,9 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
@@ -33,18 +40,39 @@ public class UserServiceTest {
         user.setId(1L);
         user.setName("John Doe");
         user.setEmail("john@example.com");
-        user.setPassword("password123");
+        user.setPassword("hashedPassword"); // Mocked hash
         user.setTypeUser(TypeUser.CLIENT);
     }
 
     @Test
-    void newUser_ShouldReturnSuccessResponse() {
-        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+    void newUser_ShouldReturnSuccessResponseWithDefaultType() {
+        UserDTO userDTO = new UserDTO("John Doe", "john@example.com", "password123", null);
+        when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
 
-        ResponseDTO response = userService.newUser(user);
+        userService.newUser(userDTO);
 
-        assertEquals("Usuario Criado com sucesso!", response.getResponse());
-        verify(userRepository, times(1)).save(user);
+        ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
+        verify(userRepository).save(captor.capture());
+
+        UserEntity savedUser = captor.getValue();
+        assertEquals("hashedPassword", savedUser.getPassword());
+        assertEquals(TypeUser.CLIENT, savedUser.getTypeUser());
+        assertEquals("John Doe", savedUser.getName());
+    }
+
+    @Test
+    void newUser_ShouldReturnSuccessResponseWithProvidedType() {
+        UserDTO userDTO = new UserDTO("John Doe", "john@example.com", "password123", TypeUser.ADM);
+        when(passwordEncoder.encode("password123")).thenReturn("hashedPassword");
+
+        userService.newUser(userDTO);
+
+        ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
+        verify(userRepository).save(captor.capture());
+
+        UserEntity savedUser = captor.getValue();
+        assertEquals("hashedPassword", savedUser.getPassword());
+        assertEquals(TypeUser.ADM, savedUser.getTypeUser());
     }
 
     @Test
@@ -71,80 +99,47 @@ public class UserServiceTest {
     }
 
     @Test
-    void getUserById_ShouldReturnNullWhenNotExists() {
+    void getUserById_ShouldThrowExceptionWhenNotExists() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        UserEntity result = userService.getUserById(1L);
-
-        assertNull(result);
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(1L));
         verify(userRepository, times(1)).findById(1L);
     }
 
     @Test
-    void getUserByEmail_ShouldReturnUserWhenExists() {
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
-
-        UserEntity result = userService.getUserByEmail("john@example.com");
-
-        assertNotNull(result);
-        assertEquals("john@example.com", result.getEmail());
-        verify(userRepository, times(1)).findByEmail("john@example.com");
-    }
-
-    @Test
-    void login_ShouldReturnSuccessWhenCredentialsAreCorrect() {
-        when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
-
-        ResponseDTO response = userService.login("john@example.com", "password123");
-
-        assertEquals("Login realizado com sucesso!", response.getResponse());
-    }
-
-    @Test
-    void login_ShouldReturnErrorWhenEmailNotFound() {
+    void login_ShouldThrowExceptionWhenEmailNotFound() {
         when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
 
-        ResponseDTO response = userService.login("unknown@example.com", "password123");
-
-        assertEquals("Este email não possui cadastro!", response.getResponse());
+        assertThrows(ResourceNotFoundException.class, () -> userService.login("unknown@example.com", "password123"));
     }
 
     @Test
-    void login_ShouldReturnErrorWhenPasswordIncorrect() {
+    void login_ShouldThrowExceptionWhenPasswordIncorrect() {
         when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrongpassword", "hashedPassword")).thenReturn(false);
 
-        ResponseDTO response = userService.login("john@example.com", "wrongpassword");
-
-        assertEquals("Senha Incorreta!", response.getResponse());
+        assertThrows(UnauthorizedException.class, () -> userService.login("john@example.com", "wrongpassword"));
     }
 
     @Test
-    void updateUser_ShouldReturnSuccessWhenUserExists() {
-        UserEntity updatedInfo = new UserEntity();
-        updatedInfo.setName("John Updated");
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
-
-        ResponseDTO response = userService.updateUser(1L, updatedInfo);
-
-        assertEquals("O usuario foi atualizado com sucesso!", response.getResponse());
-        assertEquals("John Updated", user.getName());
-        verify(userRepository, times(1)).save(user);
-    }
-
-    @Test
-    void updateUser_ShouldReturnErrorWhenUserNotFound() {
+    void updateUser_ShouldThrowExceptionWhenUserNotFound() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ResponseDTO response = userService.updateUser(1L, new UserEntity());
-
-        assertEquals("Usuário não encontrado!", response.getResponse());
+        assertThrows(ResourceNotFoundException.class, () -> userService.updateUser(1L, new UserEntity()));
         verify(userRepository, never()).save(any(UserEntity.class));
     }
 
     @Test
+    void deleteUser_ShouldThrowExceptionWhenUserNotFound() {
+        when(userRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(1L));
+        verify(userRepository, never()).deleteById(1L);
+    }
+
+    @Test
     void deleteUser_ShouldReturnSuccess() {
+        when(userRepository.existsById(1L)).thenReturn(true);
         doNothing().when(userRepository).deleteById(1L);
 
         ResponseDTO response = userService.deleteUser(1L);

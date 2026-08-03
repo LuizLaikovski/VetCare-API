@@ -2,8 +2,10 @@ package com.vetcare.petmeds.controller;
 
 import com.vetcare.petmeds.dto.LoginRequestDTO;
 import com.vetcare.petmeds.dto.ResponseDTO;
+import com.vetcare.petmeds.model.user.UserDTO;
 import com.vetcare.petmeds.model.user.UserEntity;
 import com.vetcare.petmeds.model.user.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +23,7 @@ public class UserController {
     public List<UserEntity> getALl() { return userService.findAll();  }
 
     @PostMapping("/create")
-    public ResponseDTO create(@RequestBody UserEntity user) {
+    public ResponseDTO create(@RequestBody UserDTO user) {
         userService.newUser(user);
         return new ResponseDTO("Usuario cadastrado com sucesso");
     }
@@ -37,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseDTO login(@RequestBody LoginRequestDTO loginRequestDTO) {
+    public ResponseDTO login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         return userService.login(loginRequestDTO.email(), loginRequestDTO.password());
     }
 

@@ -4,6 +4,8 @@ import com.vetcare.petmeds.dto.LoginRequestDTO;
 import com.vetcare.petmeds.dto.ResponseDTO;
 import com.vetcare.petmeds.model.user.UserEntity;
 import com.vetcare.petmeds.model.user.UserService;
+import com.vetcare.petmeds.model.user.UserDTO;
+import com.vetcare.petmeds.model.user.TypeUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +56,13 @@ public class UserControllerTest {
 
     @Test
     void createUser_ShouldReturnOk() throws Exception {
-        when(userService.newUser(any(UserEntity.class))).thenReturn(new ResponseDTO("Usuario cadastrado com sucesso"));
+        when(userService.newUser(any(UserDTO.class))).thenReturn(new ResponseDTO("Usuario cadastrado com sucesso"));
+
+        UserDTO userDTO = new UserDTO("John Doe", "john@example.com", "password123", TypeUser.CLIENT);
 
         mockMvc.perform(post("/user/create")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response").value("Usuario cadastrado com sucesso"));
     }
