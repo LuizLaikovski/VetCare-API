@@ -7,9 +7,15 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 *   **Java 21**
 *   **Spring Boot 4.0.6**
 *   **Spring Data JPA**
+*   **Spring Security** (Autenticação e Hash de Senhas)
 *   **PostgreSQL** (Banco de dados)
 *   **Lombok** (Produtividade)
 *   **Spring Dotenv** (Gerenciamento de variáveis de ambiente)
+
+## Funcionalidades de Segurança e Tratamento de Erro
+
+*   **Hash de Senhas**: Todas as senhas de usuários são criptografadas utilizando `BCryptPasswordEncoder` antes de serem armazenadas no banco de dados.
+*   **Tratamento de Erro Global**: A API utiliza `@ControllerAdvice` para capturar exceções automaticamente, retornando respostas padronizadas com os status HTTP adequados (ex: 404 para recursos não encontrados, 401 para credenciais inválidas) e uma mensagem explicativa no corpo da resposta (`ErrorDTO`).
 
 ## Rotas da API
 
