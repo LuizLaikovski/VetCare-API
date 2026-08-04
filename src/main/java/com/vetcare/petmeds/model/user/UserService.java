@@ -50,7 +50,13 @@ public class UserService {
             throw new UnauthorizedException("Senha Incorreta!");
         }
 
-        return new ResponseDTO("Login realizado com sucesso!");
+        UserResponseDTO userResponseDTO = new UserResponseDTO(
+                user.getName(),
+                user.getEmail(),
+                user.getTypeUser()
+        );
+
+        return new ResponseDTO("Login realizado com sucesso!", userResponseDTO);
     }
 
     public ResponseDTO updateUser(Long id, UserEntity user) {

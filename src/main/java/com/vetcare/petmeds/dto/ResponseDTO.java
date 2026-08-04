@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.dto;
 
-import com.vetcare.petmeds.model.user.UserEntity;
+import com.vetcare.petmeds.model.user.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 public class ResponseDTO {
     private String response;
-    private UserEntity user;
+    private UserResponseDTO user;
 
-    public ResponseDTO(UserEntity user) {
+    public ResponseDTO(UserResponseDTO user) {
         this.user = user;
     }
 
