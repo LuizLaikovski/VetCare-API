@@ -1,6 +1,5 @@
 package com.vetcare.petmeds.model.user;
 
-import com.vetcare.petmeds.dto.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.exception.UnauthorizedException;
+import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.UserDTO;
+import com.vetcare.petmeds.modules.user.entity.TypeUser;
+import com.vetcare.petmeds.modules.user.entity.UserEntity;
+import com.vetcare.petmeds.modules.user.repository.UserRepository;
+import com.vetcare.petmeds.modules.user.service.UserService;
 
 import java.util.Arrays;
 import java.util.List;

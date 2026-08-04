@@ -1,6 +1,10 @@
 package com.vetcare.petmeds.model.animal;
 
-import com.vetcare.petmeds.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
+import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
+import com.vetcare.petmeds.modules.animal.service.AnimalService;
+import com.vetcare.petmeds.modules.animal.entity.Specie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,18 +1,19 @@
 package com.vetcare.petmeds.controller;
 
-import com.vetcare.petmeds.dto.ResponseDTO;
-import com.vetcare.petmeds.model.animal.AnimalEntity;
-import com.vetcare.petmeds.model.animal.AnimalService;
-import com.vetcare.petmeds.model.animal.Specie;
+import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.animal.controller.AnimalController;
+import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
+import com.vetcare.petmeds.modules.animal.service.AnimalService;
+import com.vetcare.petmeds.modules.animal.entity.Specie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
 import java.util.Optional;

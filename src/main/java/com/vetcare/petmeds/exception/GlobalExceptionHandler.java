@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.exception;
 
-import com.vetcare.petmeds.dto.ErrorDTO;
+import com.vetcare.petmeds.shared.ErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
