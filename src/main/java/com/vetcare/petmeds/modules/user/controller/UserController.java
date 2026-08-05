@@ -1,6 +1,7 @@
 package com.vetcare.petmeds.modules.user.controller;
 
 import com.vetcare.petmeds.modules.user.dto.LoginRequestDTO;
+import com.vetcare.petmeds.modules.user.dto.LogoutRequestDTO;
 import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
 import com.vetcare.petmeds.modules.user.dto.UserDTO;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;
@@ -44,8 +45,8 @@ public class UserController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseDTO logout(String token) {
-        userService.logout(token);
+    public ResponseDTO logout(@RequestBody LogoutRequestDTO logoutRequestDTO) {
+        userService.logout(logoutRequestDTO.token());
         return new ResponseDTO("Logout com Sucesso");
     }
 

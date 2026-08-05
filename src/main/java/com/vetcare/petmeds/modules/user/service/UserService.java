@@ -71,6 +71,9 @@ public class UserService {
     }
 
     public void logout(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
         tokenService.deleteToken(token);
     }
 

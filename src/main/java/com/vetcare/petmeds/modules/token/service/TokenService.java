@@ -31,9 +31,24 @@ public class TokenService {
         return tokenEntity.getToken();
     }
 
-     public void deleteToken(String token) {
+    public boolean isTokenExpired(TokenEntity tokenEntity) {
+        return tokenEntity.getExpiredAt().isBefore(LocalDateTime.now());
+    }
+
+    @Transactional
+    public String renewToken(String token) {
+        TokenEntity tokenEntity = tokenRepository.findByToken(token).orElseThrow(() ->
+                new ResourceNotFoundException("Token não encontrado"));
+        
+        tokenEntity.setToken(UUID.randomUUID().toString());
+        tokenEntity.setExpiredAt(LocalDateTime.now().plusHours(2));
+        tokenRepository.save(tokenEntity);
+        return tokenEntity.getToken();
+    }
+
+    public void deleteToken(String token) {
         TokenEntity tokenEntity = tokenRepository.findByToken(token).orElseThrow(() ->
                 new ResourceNotFoundException("Token não encontrado"));
         tokenRepository.delete(tokenEntity);
-     }
+    }
 }

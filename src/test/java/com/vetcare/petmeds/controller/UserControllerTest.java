@@ -97,4 +97,11 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response").value("O usuario foi removido com sucesso!"));
     }
+
+    @Test
+    void logout_ShouldReturnOk() throws Exception {
+        mockMvc.perform(delete("/user/logout"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.response").value("Logout com Sucesso"));
+    }
 }
