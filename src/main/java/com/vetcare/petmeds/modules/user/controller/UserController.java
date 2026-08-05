@@ -43,6 +43,12 @@ public class UserController {
         return userService.login(loginRequestDTO.email(), loginRequestDTO.password());
     }
 
+    @DeleteMapping("/logout")
+    public ResponseDTO logout(String token) {
+        userService.logout(token);
+        return new ResponseDTO("Logout com Sucesso");
+    }
+
     @PutMapping("/update/{id}")
     public ResponseDTO update(@PathVariable Long id, @RequestBody UserEntity user) {
         return userService.updateUser(id, user);
