@@ -29,7 +29,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         
         // Rotas públicas que não precisam de token
-        if (path.startsWith("/user/login") || path.startsWith("/user/create")) {
+        if (path.startsWith("/user/login") || path.startsWith("/user/create") || path.startsWith("/user/logout")) {
             filterChain.doFilter(request, response);
             return;
         }

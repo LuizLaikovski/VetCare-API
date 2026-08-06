@@ -45,8 +45,8 @@ public class UserController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseDTO logout(@RequestBody LogoutRequestDTO logoutRequestDTO) {
-        userService.logout(logoutRequestDTO.token());
+    public ResponseDTO logout(@RequestHeader("Authorization") String authHeader) {
+        userService.logout(authHeader);
         return new ResponseDTO("Logout com Sucesso");
     }
 
