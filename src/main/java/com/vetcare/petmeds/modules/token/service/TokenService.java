@@ -1,54 +1,35 @@
 package com.vetcare.petmeds.modules.token.service;
 
-import com.vetcare.petmeds.exception.ResourceNotFoundException;
-import com.vetcare.petmeds.modules.token.entity.TokenEntity;
-import com.vetcare.petmeds.modules.token.repository.TokenRepository;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;
-import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class TokenService {
-    private final TokenRepository tokenRepository;
 
-    @Transactional
-    public String tokenCreate(UserEntity userEntity) {
-        TokenEntity tokenEntity = userEntity.getToken();
-        if  (tokenEntity == null) {
-            tokenEntity = new TokenEntity();
-            tokenEntity.setUser(userEntity);
-        }
-
-        tokenEntity.setToken(UUID.randomUUID().toString());
-        tokenEntity.setExpiredAt(LocalDateTime.now().plusHours(2));
-
-        tokenRepository.save(tokenEntity);
-        return tokenEntity.getToken();
+    @CachePut(value = "tokens", key = "#token")
+    public String tokenCreate(UserEntity userEntity, String token) {
+        return token;
+    }
+    
+    // Método auxiliar para criar e armazenar o token associado ao user
+    public String generateAndStoreToken(UserEntity userEntity) {
+        String token = UUID.randomUUID().toString();
+        tokenCreate(userEntity, token);
+        return token;
     }
 
-    public boolean isTokenExpired(TokenEntity tokenEntity) {
-        return tokenEntity.getExpiredAt().isBefore(LocalDateTime.now());
+    @Cacheable(value = "tokens", key = "#token")
+    public boolean isValid(String token) {
+        return false; // Se chegar aqui, o token não está no cache
     }
 
-    @Transactional
-    public String renewToken(String token) {
-        TokenEntity tokenEntity = tokenRepository.findByToken(token).orElseThrow(() ->
-                new ResourceNotFoundException("Token não encontrado"));
-        
-        tokenEntity.setToken(UUID.randomUUID().toString());
-        tokenEntity.setExpiredAt(LocalDateTime.now().plusHours(2));
-        tokenRepository.save(tokenEntity);
-        return tokenEntity.getToken();
-    }
-
+    @CacheEvict(value = "tokens", key = "#token")
     public void deleteToken(String token) {
-        TokenEntity tokenEntity = tokenRepository.findByToken(token).orElseThrow(() ->
-                new ResourceNotFoundException("Token não encontrado"));
-        tokenRepository.delete(tokenEntity);
+        // Apenas remove do cache
     }
 }

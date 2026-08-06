@@ -2,7 +2,6 @@ package com.vetcare.petmeds.modules.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
-import com.vetcare.petmeds.modules.token.entity.TokenEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,9 +34,6 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     private TypeUser typeUser;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private TokenEntity token;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonManagedReference

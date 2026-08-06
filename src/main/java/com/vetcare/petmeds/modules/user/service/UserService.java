@@ -2,7 +2,6 @@ package com.vetcare.petmeds.modules.user.service;
 
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.exception.UnauthorizedException;
-import com.vetcare.petmeds.modules.token.dto.TokenDTO;
 import com.vetcare.petmeds.modules.token.service.TokenService;
 import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
 import com.vetcare.petmeds.modules.user.dto.UserDTO;
@@ -58,8 +57,7 @@ public class UserService {
             throw new UnauthorizedException("Senha Incorreta!");
         }
 
-        String generatedToken = tokenService.tokenCreate(user);
-        TokenDTO tokenDTO = new TokenDTO(generatedToken);
+        String generatedToken = tokenService.generateAndStoreToken(user);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO(
                 user.getName(),
@@ -67,7 +65,7 @@ public class UserService {
                 user.getTypeUser()
         );
 
-        return new ResponseDTO("Login realizado com sucesso!", userResponseDTO, tokenDTO.getToken());
+        return new ResponseDTO("Login realizado com sucesso!", userResponseDTO, generatedToken);
     }
 
     public void logout(String token) {

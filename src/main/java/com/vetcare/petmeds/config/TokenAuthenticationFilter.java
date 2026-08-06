@@ -1,6 +1,5 @@
 package com.vetcare.petmeds.config;
 
-import com.vetcare.petmeds.modules.token.repository.TokenRepository;
 import com.vetcare.petmeds.modules.token.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,11 +13,9 @@ import java.io.IOException;
 @Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-    private final TokenRepository tokenRepository;
     private final TokenService tokenService;
 
-    public TokenAuthenticationFilter(TokenRepository tokenRepository, TokenService tokenService) {
-        this.tokenRepository = tokenRepository;
+    public TokenAuthenticationFilter(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 
@@ -27,7 +24,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        
+
         // Rotas públicas que não precisam de token
         if (path.startsWith("/user/login") || path.startsWith("/user/create") || path.startsWith("/user/logout")) {
             filterChain.doFilter(request, response);
@@ -36,7 +33,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token ausente ou formato inválido");
             return;
@@ -44,17 +41,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        var tokenEntityOpt = tokenRepository.findByToken(token);
-
-        if (tokenEntityOpt.isEmpty()) {
+        // Verifica se o token existe no cache
+        if (!tokenService.isValid(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token inválido");
-            return;
-        }
-
-        if (tokenService.isTokenExpired(tokenEntityOpt.get())) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token expirado");
+            response.getWriter().write("Token inválido ou expirado");
             return;
         }
 
