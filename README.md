@@ -7,7 +7,9 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 *   **Java 21**
 *   **Spring Boot 4.0.6**
 *   **Spring Data JPA**
-*   **Spring Security** (Autenticação e Hash de Senhas)
+*   **Spring Security**
+*   **JWT (java-jwt)** para autenticação
+*   **Spring Boot Validation**
 *   **PostgreSQL** (Banco de dados)
 *   **Lombok** (Produtividade)
 *   **Spring Dotenv** (Gerenciamento de variáveis de ambiente)
@@ -16,6 +18,22 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 
 *   **Hash de Senhas**: Todas as senhas de usuários são criptografadas utilizando `BCryptPasswordEncoder` antes de serem armazenadas no banco de dados.
 *   **Tratamento de Erro Global**: A API utiliza `@ControllerAdvice` para capturar exceções automaticamente, retornando respostas padronizadas com os status HTTP adequados (ex: 404 para recursos não encontrados, 401 para credenciais inválidas) e uma mensagem explicativa no corpo da resposta (`ErrorDTO`).
+
+## Pré-requisitos
+
+*   Java 21 ou superior
+*   Apache Maven 3.x
+*   PostgreSQL configurado
+
+## Como Rodar
+
+1.  Clone o repositório.
+2.  Crie um arquivo `.env` na raiz do projeto (certifique-se de configurar as variáveis necessárias para a conexão com o banco de dados e segredos da aplicação).
+3.  Certifique-se que o banco de dados PostgreSQL esteja rodando conforme configurado no `.env`.
+4.  Execute o comando para rodar a aplicação:
+    ```bash
+    ./mvnw spring-boot:run
+    ```
 
 ## Rotas da API
 
