@@ -18,7 +18,7 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 
 *   **Hash de Senhas**: Todas as senhas de usuários são criptografadas utilizando `BCryptPasswordEncoder` antes de serem armazenadas no banco de dados.
 *   **Tratamento de Erro Global**: A API utiliza `@ControllerAdvice` para capturar exceções automaticamente, retornando respostas padronizadas com os status HTTP adequados (ex: 404 para recursos não encontrados, 401 para credenciais inválidas) e uma mensagem explicativa no corpo da resposta (`ErrorDTO`). 
-*   **Segurança das rotas**: Todas as rotas têm como obrigatoriedade o envio de token no *Header*, com o nome `Authorization`, contendo o token vinculado ao usuário. Esse token tem validade de 2 dias.
+*   **Segurança das rotas**: Todas as rotas têm como obrigatoriedade o envio de token no *Header*, com o nome `Authorization`, contendo o token vinculado ao usuário, somente as rotas de `/user/login`, `/user/create` e `/user/logout`. Esse token tem validade de 2 dias.
 ## Pré-requisitos
 
 *   Java 21 ou superior
