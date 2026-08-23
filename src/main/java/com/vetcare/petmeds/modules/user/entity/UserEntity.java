@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -17,7 +19,9 @@ import java.util.List;
 @Table(name = "tb_users")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class UserEntity {
 
     @Id
@@ -37,6 +41,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     @JsonManagedReference
+    @ToString.Exclude
     private List<AnimalEntity> animals =  new ArrayList<>();
 
     public Collection<? extends GrantedAuthority> getAutorities() {

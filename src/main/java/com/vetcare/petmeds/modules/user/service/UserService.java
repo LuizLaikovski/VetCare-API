@@ -72,7 +72,7 @@ public class UserService {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
-        tokenService.deleteToken(token);
+        tokenService.revokeToken(token);
     }
 
     public ResponseDTO updateUser(Long id, UserEntity user) {
