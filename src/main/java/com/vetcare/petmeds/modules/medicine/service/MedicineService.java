@@ -4,6 +4,8 @@ import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +19,8 @@ public class MedicineService {
         return medicineRepository.findById(id).orElse(null);
     }
 
-    public List<MedicineEntity> getAllMedicines(){
-        return medicineRepository.findAll();
+    public Page<MedicineEntity> getAllMedicines(Pageable pageable){
+        return medicineRepository.findAll(pageable);
     }
 
     public List<MedicineEntity> getByName(String name) {

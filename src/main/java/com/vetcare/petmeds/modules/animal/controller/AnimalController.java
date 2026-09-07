@@ -4,6 +4,9 @@ import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.animal.service.AnimalService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +41,10 @@ public class AnimalController {
     }
 
     @GetMapping("/all")
-    public List<AnimalEntity> getAllAnimals() {
-        return animalService.getAll();
+    public Page<AnimalEntity> getAllAnimals(
+            @PageableDefault(page = 0, size = 10) Pageable pageable
+    ) {
+        return animalService.getAll(pageable);
     }
 
     @GetMapping("/{name}")

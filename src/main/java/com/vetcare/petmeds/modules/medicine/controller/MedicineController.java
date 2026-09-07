@@ -4,6 +4,9 @@ import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.service.MedicineService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +29,10 @@ public class MedicineController {
     }
 
     @GetMapping("/all")
-    public List<MedicineEntity> getAllMedicine() { return medicineService.getAllMedicines(); }
+    public Page<MedicineEntity> getAllMedicine(
+            @PageableDefault(page = 0, size = 10) Pageable pageable
+            )
+    { return medicineService.getAllMedicines(pageable); }
 
     @PostMapping("/create")
     public MedicineEntity createMedicine(@RequestBody MedicineEntity medicine) {

@@ -6,7 +6,10 @@ import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +20,8 @@ public class AnimalService {
     private AnimalRepository animalRepository;
     private MedicineRepository medicineRepository;
 
-    public List<AnimalEntity> getAll() {
-        return animalRepository.findAll();
+    public Page<AnimalEntity> getAll(Pageable pageable) {
+        return animalRepository.findAll(pageable);
     }
 
     public AnimalEntity getById(Long id) {
