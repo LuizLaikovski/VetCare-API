@@ -1,7 +1,9 @@
 package com.vetcare.petmeds.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vetcare.petmeds.modules.token.service.TokenService;
 import com.vetcare.petmeds.modules.user.repository.UserRepository;
+import com.vetcare.petmeds.shared.ErrorDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,16 +15,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 
 @Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
-    public TokenAuthenticationFilter(TokenService tokenService, UserRepository userRepository) {
+    public TokenAuthenticationFilter(TokenService tokenService, UserRepository userRepository, ObjectMapper objectMapper) {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -42,9 +47,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         System.out.println(">>> AuthHeader: " + authHeader); // LOG DEBUG
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println(">>> Token ausente ou formato inválido"); // LOG DEBUG
+            ErrorDTO errorDTO = new ErrorDTO(
+                    new Date(),
+                    "Token ausente ou formato inválido",
+                    "Houve um erro ao chamar esta rota, o token não foi informado ou encontra-se inválido"
+            );
+
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token ausente ou formato inválido");
+            response.setContentType("application/json");
+
+            response.getWriter().write(objectMapper.writeValueAsString(errorDTO));
             return;
         }
 
@@ -61,9 +74,17 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             });
         }
  else {
-            System.out.println(">>> Token inválido ou expirado"); // LOG DEBUG
+            ErrorDTO errorDTO = new ErrorDTO(
+                    new Date(),
+                    "Token ausente ou formato inválido",
+                    "Houve um erro ao chamar esta rota, o token não foi informado ou encontra-se inválido"
+            );
+
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token inválido ou expirado");
+            response.setContentType("application/json");
+
+            response.getWriter().write(objectMapper.writeValueAsString(errorDTO));
             return;
         }
 
