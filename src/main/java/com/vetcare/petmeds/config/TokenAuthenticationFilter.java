@@ -35,12 +35,31 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        System.out.println(">>> Requisição para: " + path); // LOG DEBUG
+        String contextPath = request.getContextPath();
+        String requestPath = path.substring(contextPath.length());
+        
+        System.out.println(">>> Requisição para: " + requestPath); // LOG DEBUG
 
-        // Rotas públicas que não precisam de token
-        if (path.startsWith("/user/login") || path.startsWith("/user/create") || path.startsWith("/user/logout")) {
-            filterChain.doFilter(request, response);
-            return;
+        // Usar AntPathMatcher para verificar se a rota é pública
+        org.springframework.util.AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
+        String[] routesNoProtected = {
+                "/user/login",
+                "/user/create",
+                "/user/logout",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**",
+                "/v3/api-docs.yaml",
+                "/swagger-resources/**",
+                "/webjars/**",
+                "/doc/**"
+        };
+
+        for (String route : routesNoProtected) {
+            if (pathMatcher.match(route, requestPath)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
         String authHeader = request.getHeader("Authorization");

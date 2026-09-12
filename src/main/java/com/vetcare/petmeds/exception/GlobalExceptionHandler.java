@@ -1,5 +1,6 @@
 package com.vetcare.petmeds.exception;
 
+import com.vetcare.petmeds.modules.animal.exception.ResourceNotFoundAnimalException;
 import com.vetcare.petmeds.shared.ErrorDTO;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
@@ -51,6 +52,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ResourceNotFoundAnimalException.class)
+    public final ResponseEntity<ErrorDTO> handleResourceNotFoundAnimalException(ResourceNotFoundAnimalException ex, WebRequest request) {
+        ErrorDTO errorDTO = new ErrorDTO(
+                new Date(),
+                "Não foi encontrado nenhum registro de animal com os parâmetros informados.",
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BadRequestException.class)

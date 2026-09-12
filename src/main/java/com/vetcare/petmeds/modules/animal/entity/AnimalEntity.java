@@ -2,6 +2,7 @@ package com.vetcare.petmeds.modules.animal.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.vetcare.petmeds.modules.initialCheckUp.entity.InitialCheckUpEntity;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;
 import jakarta.persistence.*;
@@ -28,11 +29,16 @@ public class AnimalEntity {
     private String race; // raça
     private Integer age;
     private Double weight; // peso
+    private Sex gender;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "owner_id")
     private UserEntity owner;
+
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("animal")
+    private List<InitialCheckUpEntity> initialCheckUp;
 
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
     @JsonManagedReference

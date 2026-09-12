@@ -40,8 +40,9 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 ### Animal (`/animal`)
 *   `POST /animal/create`: Cadastra um novo animal.
 *   `POST /animal/createAll`: Cadastra uma lista de animais.
+*   `POST /animal/addMedicine`: Associa um medicamento a um animal.
 *   `GET /animal/id/{id}`: Busca um animal pelo ID.
-*   `GET /animal/all`: Lista todos os animais.
+*   `GET /animal/all`: Lista todos os animais (paginado: `page`, `size`).
 *   `GET /animal/{name}`: Busca um animal pelo nome.
 *   `PUT /animal/edit/{id}`: Atualiza os dados de um animal.
 *   `DELETE /animal/{id}`: Remove um animal.
@@ -49,7 +50,7 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 ### Medicine (`/medicine`)
 *   `GET /medicine/{id}`: Busca um medicamento pelo ID.
 *   `GET /medicine/{name}?medicineName={name}`: Busca medicamentos pelo nome.
-*   `GET /medicine/all`: Lista todos os medicamentos.
+*   `GET /medicine/all`: Lista todos os medicamentos (paginado: `page`, `size`).
 *   `POST /medicine/create`: Cadastra um novo medicamento.
 *   `POST /medicine/createAll`: Cadastra uma lista de medicamentos.
 *   `PUT /medicine/{id}`: Atualiza um medicamento.
@@ -61,5 +62,16 @@ Esta é uma API desenvolvida para o gerenciamento de registros de animais e medi
 *   `GET /user/{id}`: Busca um usuário pelo ID.
 *   `GET /user/getEmail`: Busca um usuário pelo e-mail.
 *   `POST /user/login`: Realiza login.
-*   `PUT /user/update`: Atualiza um usuário.
+*   `POST /user/logout`: Realiza logout.
+*   `PUT /user/update/{id}`: Atualiza um usuário.
 *   `DELETE /user/{id}`: Remove um usuário.
+
+### InitialCheckUp (`/initialCheckUp`)
+*   `POST /initialCheckUp/create`: Cadastra um novo check-up inicial.
+*   `PUT /initialCheckUp/edit/{id}`: Atualiza um check-up inicial.
+*   `DELETE /initialCheckUp/{id}`: Remove um check-up inicial.
+*   `GET /initialCheckUp/all`: Lista todos os check-ups iniciais.
+*   `GET /initialCheckUp/{id}`: Busca um check-up inicial pelo ID.
+*   `GET /initialCheckUp/animal/{animalId}`: Busca check-ups iniciais por ID de animal.
+*   `GET /initialCheckUp/vet/{veterinarianId}`: Busca check-ups iniciais por ID de veterinário.
+*   `GET /initialCheckUp/date-range`: Busca check-ups iniciais por intervalo de datas.

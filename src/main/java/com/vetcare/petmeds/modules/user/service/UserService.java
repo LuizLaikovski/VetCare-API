@@ -60,6 +60,7 @@ public class UserService {
         String generatedToken = tokenService.generateAndStoreToken(user);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO(
+                user.getId(),
                 user.getName(),
                 user.getEmail(),
                 user.getTypeUser()

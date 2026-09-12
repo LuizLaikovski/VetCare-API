@@ -1,6 +1,7 @@
 package com.vetcare.petmeds.modules.animal.service;
 
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
+import com.vetcare.petmeds.modules.animal.exception.ResourceNotFoundAnimalException;
 import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
 import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
@@ -26,11 +27,13 @@ public class AnimalService {
 
     public AnimalEntity getById(Long id) {
         return animalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Animal não encontrado"));
+                //.orElseThrow(() -> new RuntimeException("Animal não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundAnimalException("Animal não encontrado"));
     }
 
     public Optional<AnimalEntity> getByName(String name) {
-        return animalRepository.findByName(name);
+        return Optional.of(animalRepository.findByName(name)
+                .orElseThrow(() -> new ResourceNotFoundAnimalException("Animal não encontrado")));
     }
 
     public ResponseDTO setMedicine(Long idAnimal, Long idMedicine) {
