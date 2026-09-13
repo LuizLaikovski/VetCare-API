@@ -7,16 +7,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ResponseDTO {
+public class ResponseLoginDTO {
     private String response;
     private UserResponseDTO user;
     private String token;
 
-    public ResponseDTO(UserResponseDTO user) {
+    public ResponseLoginDTO(UserResponseDTO user) {
         this.user = user;
     }
 
-    public ResponseDTO(String response) {
+    public ResponseLoginDTO(String response) {
         this.response = response;
     }
 }

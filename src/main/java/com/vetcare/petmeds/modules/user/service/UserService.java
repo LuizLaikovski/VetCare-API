@@ -3,13 +3,15 @@ package com.vetcare.petmeds.modules.user.service;
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.exception.UnauthorizedException;
 import com.vetcare.petmeds.modules.token.service.TokenService;
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.user.dto.UserDTO;
 import com.vetcare.petmeds.modules.user.dto.UserResponseDTO;
 import com.vetcare.petmeds.modules.user.entity.TypeUser;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;
 import com.vetcare.petmeds.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     private TokenService tokenService;
 
-    public ResponseDTO newUser(UserDTO user) {
+    public ResponseLoginDTO newUser(UserDTO user) {
         UserEntity userEntity = new UserEntity();
         userEntity.setName(user.getName());
         userEntity.setEmail(user.getEmail());
@@ -35,11 +37,11 @@ public class UserService {
         }
 
         userRepository.save(userEntity);
-        return new ResponseDTO("Usuario Criado com sucesso!");
+        return new ResponseLoginDTO("Usuario Criado com sucesso!");
     }
 
-    public List<UserEntity> findAll() {
-        return userRepository.findAll();
+    public Page<UserEntity> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public UserEntity getUserById(Long id) {
@@ -50,7 +52,7 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Este email não possui cadastro!"));
     }
 
-    public ResponseDTO login(String email, String password) {
+    public ResponseLoginDTO login(String email, String password) {
         UserEntity user = getUserByEmail(email);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -66,7 +68,7 @@ public class UserService {
                 user.getTypeUser()
         );
 
-        return new ResponseDTO("Login realizado com sucesso!", userResponseDTO, generatedToken);
+        return new ResponseLoginDTO("Login realizado com sucesso!", userResponseDTO, generatedToken);
     }
 
     public void logout(String token) {
@@ -76,7 +78,7 @@ public class UserService {
         tokenService.revokeToken(token);
     }
 
-    public ResponseDTO updateUser(Long id, UserEntity user) {
+    public ResponseLoginDTO updateUser(Long id, UserEntity user) {
         UserEntity oldUser = getUserById(id);
 
         if (user.getName() != null) {
@@ -97,15 +99,15 @@ public class UserService {
 
         userRepository.save(oldUser);
 
-        return new ResponseDTO("O usuario foi atualizado com sucesso!");
+        return new ResponseLoginDTO("O usuario foi atualizado com sucesso!");
     }
 
-    public ResponseDTO deleteUser(Long id) {
+    public ResponseLoginDTO deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("Usuário não encontrado!");
         }
         userRepository.deleteById(id);
-        return new ResponseDTO("O usuario foi removido com sucesso!");
+        return new ResponseLoginDTO("O usuario foi removido com sucesso!");
     }
 
 }

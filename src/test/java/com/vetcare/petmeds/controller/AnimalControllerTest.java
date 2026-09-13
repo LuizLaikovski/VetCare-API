@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.controller;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.animal.controller.AnimalController;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.animal.service.AnimalService;
@@ -47,23 +47,24 @@ public class AnimalControllerTest {
     }
 
     @Test
-    void createAnimal_ShouldReturnOk() throws Exception {
+    void createAnimal_ShouldReturnCreated() throws Exception {
         when(animalService.createNewAnimal(any(AnimalEntity.class))).thenReturn(animal);
 
         mockMvc.perform(post("/animal/create")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(animal)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Animal cadastrado com sucesso"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.description").value("Animal cadastrado com sucesso"));
     }
 
     @Test
     void getAllAnimals_ShouldReturnOk() throws Exception {
-        when(animalService.getAll()).thenReturn(Arrays.asList(animal));
+        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(animal));
+        when(animalService.getAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/animal/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Rex"));
+                .andExpect(jsonPath("$.content[0].name").value("Rex"));
     }
 
     @Test
@@ -97,10 +98,13 @@ public class AnimalControllerTest {
 
     @Test
     void deleteAnimal_ShouldReturnOk() throws Exception {
-        when(animalService.deleteById(1L)).thenReturn(new ResponseDTO("Animal deletado com sucesso"));
+        // Since deleteById now returns ResponseEntity<ResponseDTO>, but the controller ignores it
+        // We need to mock the service call.
+        // Wait, the service returns ResponseEntity<ResponseDTO>.
+        // Let's adjust the mock to match.
+        when(animalService.deleteById(1L)).thenReturn(new org.springframework.http.ResponseEntity<>(new com.vetcare.petmeds.shared.ResponseDTO(new java.util.Date(), "Animal deletado com sucesso", "Animal deletado com sucesso"), org.springframework.http.HttpStatus.NO_CONTENT));
 
         mockMvc.perform(delete("/animal/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Animal deletado com sucesso"));
+                .andExpect(status().isNoContent());
     }
 }

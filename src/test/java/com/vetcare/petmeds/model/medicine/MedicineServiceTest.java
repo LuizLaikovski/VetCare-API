@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.model.medicine;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
 import com.vetcare.petmeds.modules.medicine.service.MedicineService;
@@ -66,12 +66,13 @@ public class MedicineServiceTest {
     @Test
     void getAllMedicines_ShouldReturnListOfMedicines() {
         List<MedicineEntity> medicines = Arrays.asList(medicine);
-        when(medicineRepository.findAll()).thenReturn(medicines);
+        org.springframework.data.domain.Page<MedicineEntity> page = new org.springframework.data.domain.PageImpl<>(medicines);
+        when(medicineRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        List<MedicineEntity> result = medicineService.getAllMedicines();
+        org.springframework.data.domain.Page<MedicineEntity> result = medicineService.getAllMedicines(org.springframework.data.domain.Pageable.unpaged());
 
-        assertEquals(1, result.size());
-        verify(medicineRepository, times(1)).findAll();
+        assertEquals(1, result.getContent().size());
+        verify(medicineRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class MedicineServiceTest {
         List<MedicineEntity> medicines = Arrays.asList(medicine, new MedicineEntity());
         when(medicineRepository.save(any(MedicineEntity.class))).thenReturn(medicine);
 
-        ResponseDTO response = medicineService.createAllsMedicine(medicines);
+        ResponseLoginDTO response = medicineService.createAllsMedicine(medicines);
 
         assertTrue(response.getResponse().contains("medicamentos foram criados com sucesso"));
         verify(medicineRepository, times(2)).save(any(MedicineEntity.class));
@@ -127,7 +128,7 @@ public class MedicineServiceTest {
     void deleteMedicine_ShouldReturnSuccessResponse() {
         doNothing().when(medicineRepository).deleteById(1L);
 
-        ResponseDTO response = medicineService.deleteMedicine(1L);
+        ResponseLoginDTO response = medicineService.deleteMedicine(1L);
 
         assertEquals("Medicine deleted successfully", response.getResponse());
         verify(medicineRepository, times(1)).deleteById(1L);

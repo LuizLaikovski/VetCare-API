@@ -11,10 +11,11 @@ import com.vetcare.petmeds.modules.user.dto.UserResponseDTO;
 import com.vetcare.petmeds.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -80,20 +81,20 @@ public class InitialCheckUpService {
         BeanUtils.copyProperties(dto, entity);
         
         entity.setAnimal(animalRepository.findById(dto.getAnimalId())
-                .orElseThrow(() -> new RuntimeException("Animal não encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado")));
         entity.setVeterinarian(userRepository.findById(dto.getVeterinarianId())
-                .orElseThrow(() -> new RuntimeException("Veterinário não encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Veterinário não encontrado")));
         
         return mapToDTO(repository.save(entity));
     }
 
-    public List<InitialCheckUpResponseDTO> findAll() {
-        return repository.findAll().stream().map(this::mapToDTO).toList();
+    public Page<InitialCheckUpResponseDTO> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(this::mapToDTO);
     }
 
     public InitialCheckUpResponseDTO findById(Long id) {
         return mapToDTO(repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Checkup não encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado")));
     }
 
     public InitialCheckUpResponseDTO update(Long id, InitialCheckUpDTO dto) {
@@ -110,18 +111,21 @@ public class InitialCheckUpService {
     }
 
     public void delete(Long id) {
+        InitialCheckUpEntity initialCheckUpEntity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado"));
+
         repository.deleteById(id);
     }
 
-    public List<InitialCheckUpResponseDTO> findByAnimalId(Long animalId) {
-        return repository.findByAnimalId(animalId).stream().map(this::mapToDTO).toList();
+    public Page<InitialCheckUpResponseDTO> findByAnimalId(Long animalId, Pageable pageable) {
+        return repository.findByAnimalId(animalId, pageable).map(this::mapToDTO);
     }
 
-    public List<InitialCheckUpResponseDTO> findByVeterinarianId(Long veterinarianId) {
-        return repository.findByVeterinarianId(veterinarianId).stream().map(this::mapToDTO).toList();
+    public Page<InitialCheckUpResponseDTO> findByVeterinarianId(Long veterinarianId, Pageable pageable) {
+        return repository.findByVeterinarianId(veterinarianId, pageable).map(this::mapToDTO);
     }
 
-    public List<InitialCheckUpResponseDTO> findByDateRange(LocalDateTime start, LocalDateTime end) {
-        return repository.findByExaminationDateBetween(start, end).stream().map(this::mapToDTO).toList();
+    public Page<InitialCheckUpResponseDTO> findByDateRange(LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        return repository.findByExaminationDateBetween(start, end, pageable).map(this::mapToDTO);
     }
 }

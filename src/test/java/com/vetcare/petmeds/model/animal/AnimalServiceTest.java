@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.model.animal;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
 import com.vetcare.petmeds.modules.animal.service.AnimalService;
@@ -45,13 +45,14 @@ public class AnimalServiceTest {
     @Test
     void getAll_ShouldReturnListOfAnimals() {
         List<AnimalEntity> animals = Arrays.asList(animal);
-        when(animalRepository.findAll()).thenReturn(animals);
+        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(animals);
+        when(animalRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        List<AnimalEntity> result = animalService.getAll();
+        org.springframework.data.domain.Page<AnimalEntity> result = animalService.getAll(org.springframework.data.domain.Pageable.unpaged());
 
-        assertEquals(1, result.size());
-        assertEquals("Rex", result.get(0).getName());
-        verify(animalRepository, times(1)).findAll();
+        assertEquals(1, result.getContent().size());
+        assertEquals("Rex", result.getContent().get(0).getName());
+        verify(animalRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
     }
 
     @Test
@@ -117,9 +118,9 @@ public class AnimalServiceTest {
     void deleteById_ShouldReturnSuccessResponse() {
         doNothing().when(animalRepository).deleteById(1L);
 
-        ResponseDTO response = animalService.deleteById(1L);
+        org.springframework.http.ResponseEntity<com.vetcare.petmeds.shared.ResponseDTO> response = animalService.deleteById(1L);
 
-        assertEquals("Animal do id 1 deletado com sucesso", response.getResponse());
+        assertEquals(org.springframework.http.HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(animalRepository, times(1)).deleteById(1L);
     }
 
@@ -128,7 +129,7 @@ public class AnimalServiceTest {
         List<AnimalEntity> animals = Arrays.asList(animal, new AnimalEntity());
         when(animalRepository.save(any(AnimalEntity.class))).thenReturn(animal);
 
-        ResponseDTO response = animalService.createAnimals(animals);
+        ResponseLoginDTO response = animalService.createAnimals(animals);
 
         assertTrue(response.getResponse().contains("cadastrado com sucesso"));
         verify(animalRepository, times(2)).save(any(AnimalEntity.class));

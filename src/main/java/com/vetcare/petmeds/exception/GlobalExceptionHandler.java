@@ -1,6 +1,5 @@
 package com.vetcare.petmeds.exception;
 
-import com.vetcare.petmeds.modules.animal.exception.ResourceNotFoundAnimalException;
 import com.vetcare.petmeds.shared.ErrorDTO;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
@@ -14,12 +13,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
@@ -54,16 +51,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(ResourceNotFoundAnimalException.class)
-    public final ResponseEntity<ErrorDTO> handleResourceNotFoundAnimalException(ResourceNotFoundAnimalException ex, WebRequest request) {
-        ErrorDTO errorDTO = new ErrorDTO(
-                new Date(),
-                "Não foi encontrado nenhum registro de animal com os parâmetros informados.",
-                request.getDescription(false)
-        );
-        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(BadRequestException.class)
     public final ResponseEntity<ErrorDTO> handleBadRequest(BadRequestException ex, WebRequest request) {
         ErrorDTO errorDTO = new ErrorDTO(
@@ -84,6 +71,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public final ResponseEntity<ErrorDTO> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
+        ErrorDTO errorDTO = new ErrorDTO(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
     }
 }
 

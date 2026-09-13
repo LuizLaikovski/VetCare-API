@@ -1,17 +1,21 @@
 package com.vetcare.petmeds.modules.animal.service;
 
+import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
-import com.vetcare.petmeds.modules.animal.exception.ResourceNotFoundAnimalException;
 import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
+import com.vetcare.petmeds.shared.ResponseDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +32,12 @@ public class AnimalService {
     public AnimalEntity getById(Long id) {
         return animalRepository.findById(id)
                 //.orElseThrow(() -> new RuntimeException("Animal não encontrado"));
-                .orElseThrow(() -> new ResourceNotFoundAnimalException("Animal não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado"));
     }
 
     public Optional<AnimalEntity> getByName(String name) {
         return Optional.of(animalRepository.findByName(name)
-                .orElseThrow(() -> new ResourceNotFoundAnimalException("Animal não encontrado")));
+                .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado")));
     }
 
     public ResponseDTO setMedicine(Long idAnimal, Long idMedicine) {
@@ -41,11 +45,11 @@ public class AnimalService {
         AnimalEntity animalExist = animalRepository.getById(idAnimal);
 
         if (medicineExist == null) {
-            return new ResponseDTO("Medicamento não encontrado");
+            throw new ResourceNotFoundException("Medicamento não encontrado");
         }
 
         if (animalExist == null) {
-            return new ResponseDTO("Animal não encontrado");
+            throw new ResourceNotFoundException("Animal não encontrado");
         }
 
         animalExist.getMedicine().add(medicineExist);
@@ -54,7 +58,11 @@ public class AnimalService {
 
         animalRepository.save(animalExist);
 
-        return new ResponseDTO("Medicamento salvo com sucesso");
+        return new ResponseDTO(
+                new Date(),
+                "Medicamento salvo com sucesso",
+                "Medicamento salvo com sucesso"
+        );
     }
 
     public AnimalEntity createNewAnimal(AnimalEntity animal) {
@@ -88,16 +96,17 @@ public class AnimalService {
         return animalRepository.save(existing);
     }
 
-    public ResponseDTO deleteById(Long id) {
+    public ResponseEntity<ResponseDTO> deleteById(Long id) {
         animalRepository.deleteById(id);
-        return new ResponseDTO("Animal do id "+ id +" deletado com sucesso");
+        ResponseDTO responseDTO = new ResponseDTO(new Date(), "Animal deletado com sucesso", "Animal deletado com sucesso");
+        return new ResponseEntity<>(responseDTO, HttpStatus.NO_CONTENT);
     }
 
-    public ResponseDTO createAnimals(List<AnimalEntity> animals) {
+    public ResponseLoginDTO createAnimals(List<AnimalEntity> animals) {
         for (AnimalEntity animal : animals) {
             createNewAnimal(animal);
         }
 
-        return new ResponseDTO("Os "+ animals.toArray().length +" foram cadastrado com sucesso");
+        return new ResponseLoginDTO("Os "+ animals.toArray().length +" foram cadastrado com sucesso");
     }
 }

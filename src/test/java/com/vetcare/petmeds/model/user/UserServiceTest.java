@@ -7,10 +7,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.exception.UnauthorizedException;
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.user.dto.UserDTO;
 import com.vetcare.petmeds.modules.user.entity.TypeUser;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;
@@ -82,14 +86,15 @@ public class UserServiceTest {
 
     @Test
     void findAll_ShouldReturnListOfUsers() {
-        List<UserEntity> users = Arrays.asList(user);
-        when(userRepository.findAll()).thenReturn(users);
+        Page<UserEntity> userPage = new PageImpl<>(Arrays.asList(user));
+        when(userRepository.findAll(any(Pageable.class))).thenReturn(userPage);
+        Pageable pageable = PageRequest.of(0, 10);
 
-        List<UserEntity> result = userService.findAll();
+        Page<UserEntity> result = userService.findAll(pageable);
 
-        assertEquals(1, result.size());
-        assertEquals("John Doe", result.get(0).getName());
-        verify(userRepository, times(1)).findAll();
+        assertEquals(1, result.getContent().size());
+        assertEquals("John Doe", result.getContent().get(0).getName());
+        verify(userRepository, times(1)).findAll(pageable);
     }
 
     @Test
@@ -147,7 +152,7 @@ public class UserServiceTest {
         when(userRepository.existsById(1L)).thenReturn(true);
         doNothing().when(userRepository).deleteById(1L);
 
-        ResponseDTO response = userService.deleteUser(1L);
+        ResponseLoginDTO response = userService.deleteUser(1L);
 
         assertEquals("O usuario foi removido com sucesso!", response.getResponse());
         verify(userRepository, times(1)).deleteById(1L);

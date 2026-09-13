@@ -1,77 +1,61 @@
-# Petmeds API
+# VetCare API
 
-Esta é uma API desenvolvida para o gerenciamento de registros de animais e medicamentos em uma clínica veterinária.
+Esta é uma API RESTful desenvolvida para o gerenciamento de registros clínicos em uma clínica veterinária, incluindo cadastro de animais, medicamentos, usuários e check-ups iniciais.
 
-## Stacks Utilizadas
+## 🚀 Tecnologias Utilizadas
 
 *   **Java 21**
-*   **Spring Boot 4.0.6**
+*   **Spring Boot 3.4.2**
 *   **Spring Data JPA**
 *   **Spring Security**
 *   **JWT (java-jwt)** para autenticação
-*   **Spring Boot Validation**
 *   **PostgreSQL** (Banco de dados)
 *   **Lombok** (Produtividade)
-*   **Spring Dotenv** (Gerenciamento de variáveis de ambiente)
+*   **Swagger/OpenAPI** (Documentação de API)
 
-## Funcionalidades de Segurança e Tratamento de Erro
+## 📋 Pré-requisitos
 
-*   **Hash de Senhas**: Todas as senhas de usuários são criptografadas utilizando `BCryptPasswordEncoder` antes de serem armazenadas no banco de dados.
-*   **Tratamento de Erro Global**: A API utiliza `@ControllerAdvice` para capturar exceções automaticamente, retornando respostas padronizadas com os status HTTP adequados (ex: 404 para recursos não encontrados, 401 para credenciais inválidas) e uma mensagem explicativa no corpo da resposta (`ErrorDTO`). 
-*   **Segurança das rotas**: Todas as rotas têm como obrigatoriedade o envio de token no *Header*, com o nome `Authorization`, contendo o token vinculado ao usuário, somente as rotas de `/user/login`, `/user/create` e `/user/logout`. Esse token tem validade de 2 dias.
-## Pré-requisitos
+*   Java 21 ou superior instalado.
+*   Maven 3.x instalado.
+*   PostgreSQL em execução.
 
-*   Java 21 ou superior
-*   Apache Maven 3.x
-*   PostgreSQL configurado
-
-## Como Rodar
+## ⚙️ Configuração
 
 1.  Clone o repositório.
-2.  Crie um arquivo `.env` na raiz do projeto (certifique-se de configurar as variáveis necessárias para a conexão com o banco de dados e segredos da aplicação).
-3.  Certifique-se que o banco de dados PostgreSQL esteja rodando conforme configurado no `.env`.
-4.  Execute o comando para rodar a aplicação:
-    ```bash
-    ./mvnw spring-boot:run
+2.  Crie um arquivo `.env` na raiz do projeto com as credenciais de banco de dados e segredos da aplicação:
+    ```env
+    DB_URL=jdbc:postgresql://localhost:5432/vetcare
+    DB_USERNAME=seu_usuario
+    DB_PASSWORD=sua_senha
+    JWT_SECRET=seu_segredo_jwt
     ```
 
-## Rotas da API
+## 🚀 Como Executar
 
-### Animal (`/animal`)
-*   `POST /animal/create`: Cadastra um novo animal.
-*   `POST /animal/createAll`: Cadastra uma lista de animais.
-*   `POST /animal/addMedicine`: Associa um medicamento a um animal.
-*   `GET /animal/id/{id}`: Busca um animal pelo ID.
-*   `GET /animal/all`: Lista todos os animais (paginado: `page`, `size`).
-*   `GET /animal/{name}`: Busca um animal pelo nome.
-*   `PUT /animal/edit/{id}`: Atualiza os dados de um animal.
-*   `DELETE /animal/{id}`: Remove um animal.
+Utilize o Maven Wrapper para executar a aplicação:
 
-### Medicine (`/medicine`)
-*   `GET /medicine/{id}`: Busca um medicamento pelo ID.
-*   `GET /medicine/{name}?medicineName={name}`: Busca medicamentos pelo nome.
-*   `GET /medicine/all`: Lista todos os medicamentos (paginado: `page`, `size`).
-*   `POST /medicine/create`: Cadastra um novo medicamento.
-*   `POST /medicine/createAll`: Cadastra uma lista de medicamentos.
-*   `PUT /medicine/{id}`: Atualiza um medicamento.
-*   `DELETE /medicine/{id}`: Remove um medicamento.
+```bash
+./mvnw spring-boot:run
+```
 
-### User (`/user`)
-*   `GET /user/all`: Lista todos os usuários.
-*   `POST /user/create`: Cadastra um novo usuário.
-*   `GET /user/{id}`: Busca um usuário pelo ID.
-*   `GET /user/getEmail`: Busca um usuário pelo e-mail.
-*   `POST /user/login`: Realiza login.
-*   `POST /user/logout`: Realiza logout.
-*   `PUT /user/update/{id}`: Atualiza um usuário.
-*   `DELETE /user/{id}`: Remove um usuário.
+A API estará disponível em `http://localhost:8080`.
 
-### InitialCheckUp (`/initialCheckUp`)
-*   `POST /initialCheckUp/create`: Cadastra um novo check-up inicial.
-*   `PUT /initialCheckUp/edit/{id}`: Atualiza um check-up inicial.
-*   `DELETE /initialCheckUp/{id}`: Remove um check-up inicial.
-*   `GET /initialCheckUp/all`: Lista todos os check-ups iniciais.
-*   `GET /initialCheckUp/{id}`: Busca um check-up inicial pelo ID.
-*   `GET /initialCheckUp/animal/{animalId}`: Busca check-ups iniciais por ID de animal.
-*   `GET /initialCheckUp/vet/{veterinarianId}`: Busca check-ups iniciais por ID de veterinário.
-*   `GET /initialCheckUp/date-range`: Busca check-ups iniciais por intervalo de datas.
+## 📚 Documentação da API
+
+A API conta com documentação interativa via **Swagger UI**. Após rodar a aplicação, acesse:
+`http://localhost:8080/swagger-ui.html`
+
+## ✅ Como Rodar os Testes
+
+Para executar todos os testes automatizados:
+
+```bash
+./mvnw test
+```
+
+## 🔒 Segurança e Padronização
+
+*   **Autenticação**: O acesso às rotas é protegido por JWT. Utilize o endpoint `/user/login` para obter o token e inclua-o no header `Authorization: Bearer <seu_token>` nas demais requisições.
+*   **Respostas**: Todas as rotas utilizam `ResponseEntity` para garantir retornos HTTP semânticos (ex: 201 para criações, 204 para exclusões, 404 para recursos não encontrados).
+*   **Paginação**: Endpoints de listagem (`/all`) suportam paginação via parâmetros de query: `?page=0&size=10`.
+*   **Tratamento de Erros**: Erros são tratados globalmente via `GlobalExceptionHandler`, retornando objetos JSON padronizados (`ErrorDTO`).

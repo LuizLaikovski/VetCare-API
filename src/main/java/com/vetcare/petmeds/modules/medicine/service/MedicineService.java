@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.modules.medicine.service;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
 import lombok.AllArgsConstructor;
@@ -31,11 +31,11 @@ public class MedicineService {
         return medicineRepository.save(medicine);
     }
 
-    public ResponseDTO createAllsMedicine(List<MedicineEntity> medicine) {
+    public ResponseLoginDTO createAllsMedicine(List<MedicineEntity> medicine) {
         for (MedicineEntity m : medicine) {
             medicineRepository.save(m);
         }
-        return new ResponseDTO(medicine.size() +" medicamentos foram criados com sucesso");
+        return new ResponseLoginDTO(medicine.size() +" medicamentos foram criados com sucesso");
     }
 
     public MedicineEntity updateMedicine(Long id, MedicineEntity medicine) {
@@ -50,8 +50,8 @@ public class MedicineService {
         return medicineRepository.save(existing);
     }
 
-    public ResponseDTO deleteMedicine(Long id) {
+    public ResponseLoginDTO deleteMedicine(Long id) {
         medicineRepository.deleteById(id);
-        return new ResponseDTO("Medicine deleted successfully");
+        return new ResponseLoginDTO("Medicine deleted successfully");
     }
 }

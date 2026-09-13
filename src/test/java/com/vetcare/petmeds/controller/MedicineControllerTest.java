@@ -1,6 +1,6 @@
 package com.vetcare.petmeds.controller;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseDTO;
+import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.medicine.controller.MedicineController;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.service.MedicineService;
@@ -55,11 +55,12 @@ public class MedicineControllerTest {
 
     @Test
     void getAllMedicines_ShouldReturnOk() throws Exception {
-        when(medicineService.getAllMedicines()).thenReturn(Arrays.asList(medicine));
+        org.springframework.data.domain.Page<MedicineEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(medicine));
+        when(medicineService.getAllMedicines(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/medicine/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Paracetamol"));
+                .andExpect(jsonPath("$.content[0].name").value("Paracetamol"));
     }
 
     @Test
@@ -86,7 +87,7 @@ public class MedicineControllerTest {
 
     @Test
     void deleteMedicine_ShouldReturnOk() throws Exception {
-        when(medicineService.deleteMedicine(1L)).thenReturn(new ResponseDTO("Medicine deleted successfully"));
+        when(medicineService.deleteMedicine(1L)).thenReturn(new ResponseLoginDTO("Medicine deleted successfully"));
 
         mockMvc.perform(delete("/medicine/1"))
                 .andExpect(status().isOk())
