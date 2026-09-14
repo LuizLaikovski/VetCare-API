@@ -33,9 +33,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
-@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(controllers = UserController.class, 
+    excludeFilters = @org.springframework.context.annotation.ComponentScan.Filter(type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE, classes = {com.vetcare.petmeds.config.SecurityConfig.class, com.vetcare.petmeds.config.TokenAuthenticationFilter.class}),
+    excludeAutoConfiguration = {org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class})
 public class UserControllerTest {
 
     @Autowired
@@ -43,15 +43,6 @@ public class UserControllerTest {
 
     @MockitoBean
     private UserService userService;
-
-    @MockitoBean
-    private TokenService tokenService;
-
-    @MockitoBean
-    private UserRepository userRepository;
-
-    @MockitoBean
-    private TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Autowired
     private ObjectMapper objectMapper;

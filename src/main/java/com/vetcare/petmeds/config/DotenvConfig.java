@@ -8,18 +8,22 @@ public class DotenvConfig {
 
     static {
         try {
-            Dotenv dotenv = Dotenv.configure()
-                    .directory("./")  // raiz do projeto
-                    .ignoreIfMissing()
-                    .load();
+            java.io.File envFile = new java.io.File("./.env");
+            if (envFile.exists()) {
+                Dotenv dotenv = Dotenv.configure()
+                        .directory("./")  // raiz do projeto
+                        .load();
 
-            dotenv.entries().forEach(entry -> {
-                System.setProperty(entry.getKey(), entry.getValue());
-            });
+                dotenv.entries().forEach(entry -> {
+                    System.setProperty(entry.getKey(), entry.getValue());
+                });
 
-            System.out.println("Arquivo .env carregado com sucesso!");
+                System.out.println("Arquivo .env carregado com sucesso!");
+            } else {
+                System.out.println("Arquivo .env não encontrado, usando variáveis de sistema");
+            }
         } catch (Exception e) {
-            System.out.println("Arquivo .env não encontrado, usando variáveis de sistema");
+            System.out.println("Erro ao carregar o arquivo .env: " + e.getMessage());
         }
     }
 }

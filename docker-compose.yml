@@ -1,0 +1,28 @@
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: vetcare-db
+    environment:
+      POSTGRES_DB: vetcare
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: container-vetcare
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:postgresql://database:5432/vetcare
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - JWT_SECRET=change_me_to_a_very_secure_random_key_123456
+    depends_on:
+      - database
+
+volumes:
+  postgres_data:

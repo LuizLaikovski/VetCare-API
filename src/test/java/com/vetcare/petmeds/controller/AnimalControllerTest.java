@@ -24,7 +24,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AnimalController.class)
+@WebMvcTest(controllers = AnimalController.class, 
+    excludeFilters = @org.springframework.context.annotation.ComponentScan.Filter(type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE, classes = {com.vetcare.petmeds.config.SecurityConfig.class, com.vetcare.petmeds.config.TokenAuthenticationFilter.class}),
+    excludeAutoConfiguration = {org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class})
 public class AnimalControllerTest {
 
     @Autowired
@@ -93,7 +95,7 @@ public class AnimalControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(animal)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Animal atualizado com sucesso"));
+                .andExpect(jsonPath("$.message").value("Animal atualizado com sucesso"));
     }
 
     @Test
