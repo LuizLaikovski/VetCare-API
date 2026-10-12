@@ -26,17 +26,20 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "use_id")
     private Long id;
 
+    @Column(name = "use_name")
     private String name;
 
-    @Column(unique = true)
+    @Column(name = "use_email", unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "use_password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "use_typeuser")
     private TypeUser typeUser;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)

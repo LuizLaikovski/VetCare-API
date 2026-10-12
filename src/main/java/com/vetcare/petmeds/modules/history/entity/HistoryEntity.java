@@ -17,13 +17,14 @@ public class HistoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "his_id")
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "animal_id", referencedColumnName = "id")
+    @JoinColumn(name = "his_animal_id", referencedColumnName = "ani_id")
     private AnimalEntity animal;
 
     @OneToOne
-    @JoinColumn(name = "last_checup_id", referencedColumnName = "id")
+    @JoinColumn(name = "his_checkupid", referencedColumnName = "inc_id")
     private InitialCheckUpEntity checkUp;
 }

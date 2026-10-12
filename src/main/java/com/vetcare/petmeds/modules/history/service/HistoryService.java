@@ -13,60 +13,74 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class HistoryService {
     HistoryRepository repository;
     AnimalRepository animalRepository;
     InitialCheckUpRepository initialCheckUpRepository;
 
     public HistoryResponseDTO mapToDTO(HistoryEntity historyEntity) {
+        AnimalEntity animal = historyEntity.getAnimal();
+        InitialCheckUpEntity checkUp = historyEntity.getCheckUp();
+
+        String animalDesc = "";
+        if (animal != null) {
+            String ownerName = (animal.getOwner() != null) ? animal.getOwner().getName() : "Não informado";
+            animalDesc = "Especie: "+ animal.getSpecie() + "\n" +
+                    "Raça: "+ animal.getRace() + "\n" +
+                    "Idade: "+ animal.getAge() + "\n" +
+                    "Peso: "+ animal.getWeight() + "\n" +
+                    "Genero: "+ animal.getGender() + "\n" +
+                    "Nome do Dono: "+ ownerName + "\n";
+        }
+
+        String checkupDesc = "";
+        if (checkUp != null) {
+            String vetName = (checkUp.getVeterinarian() != null) ? checkUp.getVeterinarian().getName() : "Não informado";
+            String hasEcto = (checkUp.getHasEctoparasites() != null && checkUp.getHasEctoparasites()) ? "Sim" : "Não";
+            checkupDesc = "Data do Exame: " + checkUp.getExaminationDate() + "\n" +
+                    "Veterinário Responsável: " + vetName + "\n" +
+                    "Espécie: " + checkUp.getSpecies() + "\n" +
+                    "Sexo: " + checkUp.getSex() + "\n" +
+                    "CRT (Tempo de Preenchimento Capilar): " + checkUp.getCrt() + "\n" +
+                    "FR (Frequência Respiratória): " + checkUp.getRr() + "\n" +
+                    "FC (Frequência Cardíaca): " + checkUp.getHr() + "\n" +
+                    "Mucosas: " + checkUp.getTpc() + "\n" +
+                    "Hidratação: " + checkUp.getHydration() + "\n" +
+                    "Pulso Arterial: " + checkUp.getArterialPulse() + "\n" +
+                    "Mucosas (Status): " + checkUp.getMucousMembranes() + "\n" +
+                    "Nível de Consciência: " + checkUp.getConsciousnessLevel() + "\n" +
+                    "Estado Nutricional: " + checkUp.getNutritionalStatus() + "\n" +
+                    "Comportamento: " + checkUp.getBehavior() + "\n" +
+                    "Presença de Ectoparasitas: " + hasEcto + "\n" +
+                    "Detalhes Ectoparasitas: " + checkUp.getEctoparasitesDetails() + "\n" +
+                    "Postura e Movimentação: " + checkUp.getPostureMovement() + "\n" +
+                    "Olhos: " + checkUp.getEyes() + "\n" +
+                    "Ouvidos: " + checkUp.getEars() + "\n" +
+                    "Cavidade Oral: " + checkUp.getOralCavity() + "\n" +
+                    "Sistema Respiratório: " + checkUp.getRespiratory() + "\n" +
+                    "Sistema Circulatório: " + checkUp.getCirculatory() + "\n" +
+                    "Sistema Hemolinfático: " + checkUp.getHemolymphatic() + "\n" +
+                    "Sistema Digestório: " + checkUp.getDigestive() + "\n" +
+                    "Sistema Genital: " + checkUp.getGenital() + "\n" +
+                    "Sistema Urinário: " + checkUp.getUrinary() + "\n" +
+                    "Sistema Nervoso: " + checkUp.getNervous() + "\n" +
+                    "Pele e Anexos: " + checkUp.getSkinAndAppendages() + "\n" +
+                    "Outros: " + checkUp.getOtherStatus() + "\n" +
+                    "Observações Adicionais: " + checkUp.getOtherObservations() + "\n";
+        }
+
         return HistoryResponseDTO.builder()
                 .id(historyEntity.getId())
-                .idAnimal(historyEntity.getAnimal().getId())
-                .nameAnimal(historyEntity.getAnimal().getName())
-                .descriptionAnimal(
-                        "Especie: "+ historyEntity.getAnimal().getSpecie() + "\n" +
-                        "Raça: "+ historyEntity.getAnimal().getRace() + "\n" +
-                        "Idade: "+ historyEntity.getAnimal().getAge() + "\n" +
-                        "Peso: "+ historyEntity.getAnimal().getWeight() + "\n" +
-                        "Genero: "+ historyEntity.getAnimal().getGender() + "\n" +
-                        "Nome do Dono: "+ historyEntity.getAnimal().getOwner().getName() + "\n"
-                )
-                .idCheckup(historyEntity.getCheckUp().getId())
-                .descriptionCheckup(
-                        "Data do Exame: " + historyEntity.getCheckUp().getExaminationDate() + "\n" +
-                        "Veterinário Responsável: " + historyEntity.getCheckUp().getVeterinarian().getName() + "\n" +
-                        "Espécie: " + historyEntity.getCheckUp().getSpecies() + "\n" +
-                        "Sexo: " + historyEntity.getCheckUp().getSex() + "\n" +
-                        "CRT (Tempo de Preenchimento Capilar): " + historyEntity.getCheckUp().getCrt() + "\n" +
-                        "FR (Frequência Respiratória): " + historyEntity.getCheckUp().getRr() + "\n" +
-                        "FC (Frequência Cardíaca): " + historyEntity.getCheckUp().getHr() + "\n" +
-                        "Mucosas: " + historyEntity.getCheckUp().getTpc() + "\n" +
-                        "Hidratação: " + historyEntity.getCheckUp().getHydration() + "\n" +
-                        "Pulso Arterial: " + historyEntity.getCheckUp().getArterialPulse() + "\n" +
-                        "Mucosas (Status): " + historyEntity.getCheckUp().getMucousMembranes() + "\n" +
-                        "Nível de Consciência: " + historyEntity.getCheckUp().getConsciousnessLevel() + "\n" +
-                        "Estado Nutricional: " + historyEntity.getCheckUp().getNutritionalStatus() + "\n" +
-                        "Comportamento: " + historyEntity.getCheckUp().getBehavior() + "\n" +
-                        "Presença de Ectoparasitas: " + (historyEntity.getCheckUp().getHasEctoparasites() ? "Sim" : "Não") + "\n" +
-                        "Detalhes Ectoparasitas: " + historyEntity.getCheckUp().getEctoparasitesDetails() + "\n" +
-                        "Postura e Movimentação: " + historyEntity.getCheckUp().getPostureMovement() + "\n" +
-                        "Olhos: " + historyEntity.getCheckUp().getEyes() + "\n" +
-                        "Ouvidos: " + historyEntity.getCheckUp().getEars() + "\n" +
-                        "Cavidade Oral: " + historyEntity.getCheckUp().getOralCavity() + "\n" +
-                        "Sistema Respiratório: " + historyEntity.getCheckUp().getRespiratory() + "\n" +
-                        "Sistema Circulatório: " + historyEntity.getCheckUp().getCirculatory() + "\n" +
-                        "Sistema Hemolinfático: " + historyEntity.getCheckUp().getHemolymphatic() + "\n" +
-                        "Sistema Digestório: " + historyEntity.getCheckUp().getDigestive() + "\n" +
-                        "Sistema Genital: " + historyEntity.getCheckUp().getGenital() + "\n" +
-                        "Sistema Urinário: " + historyEntity.getCheckUp().getUrinary() + "\n" +
-                        "Sistema Nervoso: " + historyEntity.getCheckUp().getNervous() + "\n" +
-                        "Pele e Anexos: " + historyEntity.getCheckUp().getSkinAndAppendages() + "\n" +
-                        "Outros: " + historyEntity.getCheckUp().getOtherStatus() + "\n" +
-                        "Observações Adicionais: " + historyEntity.getCheckUp().getOtherObservations() + "\n"
-                )
+                .idAnimal(animal != null ? animal.getId() : null)
+                .nameAnimal(animal != null ? animal.getName() : null)
+                .descriptionAnimal(animalDesc)
+                .idCheckup(checkUp != null ? checkUp.getId() : null)
+                .descriptionCheckup(checkupDesc)
                 .build();
     }
 
@@ -103,6 +117,7 @@ public class HistoryService {
         repository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public HistoryResponseDTO findById(Long id) {
         return mapToDTO(findEntityById(id));
     }
@@ -113,6 +128,7 @@ public class HistoryService {
         );
     }
 
+    @Transactional(readOnly = true)
     public Page<HistoryResponseDTO> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(this::mapToDTO);
     }

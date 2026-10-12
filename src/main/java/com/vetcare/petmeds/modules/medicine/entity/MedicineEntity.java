@@ -16,17 +16,27 @@ public class MedicineEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "med_id")
     private Long id;
-    @Column(unique = true)
+
+    @Column(name = "med_name", unique = true)
     private String name;
+
+    @Column(name = "med_manufacturer")
     private String manufacturer; // Fabricante
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "med_type")
     private TypeMedicine type; // tipo compromido, pomada, liquido
+
+    @Column(name = "med_indicatedspecies")
     private String indicatedSpecies;  // especies indicados
+
+    @Column(name = "med_dosage")
     private String dosage; // dosagem
 
     @ManyToOne
-    @JoinColumn(name = "animal_id")
+    @JoinColumn(name = "med_animal_id", referencedColumnName = "ani_id")
     @JsonBackReference
     private AnimalEntity animal;
 

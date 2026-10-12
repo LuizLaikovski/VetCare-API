@@ -22,18 +22,32 @@ public class AnimalEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ani_id")
     private Long id;
+
+    @Column(name = "ani_name")
     private String name;
+
+    @Column(name = "ani_specie")
     @Enumerated(EnumType.STRING)
     private Specie specie; // cachorro, gato
+
+    @Column(name = "ani_race")
     private String race; // raça
+
+    @Column(name = "ani_age")
     private Integer age;
+
+    @Column(name = "ani_weight")
     private Double weight; // peso
+
+    @Column(name = "ani_gender")
+    @Enumerated(EnumType.STRING)
     private Sex gender;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "ani_owner_id", referencedColumnName = "use_id")
     private UserEntity owner;
 
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
