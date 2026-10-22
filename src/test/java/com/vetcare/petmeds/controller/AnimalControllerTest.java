@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -80,11 +81,12 @@ public class AnimalControllerTest {
 
     @Test
     void getAnimalByName_ShouldReturnOk() throws Exception {
-        when(animalService.getByName("Rex")).thenReturn(Optional.of(animal));
+        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(animal));
+        when(animalService.getByName(org.mockito.ArgumentMatchers.eq("Rex"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/animal/Rex"))
+        mockMvc.perform(get("/animal/name/Rex"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Rex"));
+                .andExpect(jsonPath("$.content[0].name").value("Rex"));
     }
 
     @Test

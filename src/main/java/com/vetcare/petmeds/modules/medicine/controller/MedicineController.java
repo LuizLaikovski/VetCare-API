@@ -30,9 +30,12 @@ public class MedicineController {
     }
 
     @GetMapping("/name/{name}")
-    @Operation(summary = "Buscar medicamento por nome", description = "Busca medicamentos pelo nome")
-    public ResponseEntity<List<MedicineEntity>> getMedicineByName(@PathVariable String name) {
-        return ResponseEntity.ok(medicineService.getByName(name));
+    @Operation(summary = "Buscar medicamentos por nome", description = "Busca medicamentos pelo nome com paginação")
+    public ResponseEntity<Page<MedicineEntity>> getMedicineByName(
+            @PathVariable String name,
+            @PageableDefault(page = 0, size = 10) Pageable pageable
+    ) {
+        return ResponseEntity.ok(medicineService.getByName(name, pageable));
     }
 
     @GetMapping("/all")

@@ -76,15 +76,15 @@ public class MedicineServiceTest {
     }
 
     @Test
-    void getByName_ShouldReturnListOfMedicinesMatchingName() {
-        List<MedicineEntity> medicines = Arrays.asList(medicine);
-        when(medicineRepository.findByNameContainingIgnoreCase("para")).thenReturn(medicines);
+    void getByName_ShouldReturnPageOfMedicinesMatchingName() {
+        org.springframework.data.domain.Page<MedicineEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(medicine));
+        when(medicineRepository.findByNameContainingIgnoreCase(eq("para"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        List<MedicineEntity> result = medicineService.getByName("para");
+        org.springframework.data.domain.Page<MedicineEntity> result = medicineService.getByName("para", org.springframework.data.domain.Pageable.unpaged());
 
-        assertEquals(1, result.size());
-        assertEquals("Paracetamol", result.get(0).getName());
-        verify(medicineRepository, times(1)).findByNameContainingIgnoreCase("para");
+        assertEquals(1, result.getContent().size());
+        assertEquals("Paracetamol", result.getContent().get(0).getName());
+        verify(medicineRepository, times(1)).findByNameContainingIgnoreCase(eq("para"), any(org.springframework.data.domain.Pageable.class));
     }
 
     @Test

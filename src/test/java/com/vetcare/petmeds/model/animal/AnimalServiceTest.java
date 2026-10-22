@@ -76,14 +76,15 @@ public class AnimalServiceTest {
     }
 
     @Test
-    void getByName_ShouldReturnAnimalWhenExists() {
-        when(animalRepository.findByName("Rex")).thenReturn(Optional.of(animal));
+    void getByName_ShouldReturnPageOfAnimalsMatchingName() {
+        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(animal));
+        when(animalRepository.findByNameContainingIgnoreCase(eq("Rex"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        Optional<AnimalEntity> result = animalService.getByName("Rex");
+        org.springframework.data.domain.Page<AnimalEntity> result = animalService.getByName("Rex", org.springframework.data.domain.Pageable.unpaged());
 
-        assertTrue(result.isPresent());
-        assertEquals("Rex", result.get().getName());
-        verify(animalRepository, times(1)).findByName("Rex");
+        assertFalse(result.isEmpty());
+        assertEquals("Rex", result.getContent().get(0).getName());
+        verify(animalRepository, times(1)).findByNameContainingIgnoreCase(eq("Rex"), any(org.springframework.data.domain.Pageable.class));
     }
 
     @Test

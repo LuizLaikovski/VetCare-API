@@ -31,13 +31,11 @@ public class AnimalService {
 
     public AnimalEntity getById(Long id) {
         return animalRepository.findById(id)
-                //.orElseThrow(() -> new RuntimeException("Animal não encontrado"));
                 .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado"));
     }
 
-    public Optional<AnimalEntity> getByName(String name) {
-        return Optional.of(animalRepository.findByName(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado")));
+    public Page<AnimalEntity> getByName(String name, Pageable pageable) {
+        return animalRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
     public ResponseDTO setMedicine(Long idAnimal, Long idMedicine) {

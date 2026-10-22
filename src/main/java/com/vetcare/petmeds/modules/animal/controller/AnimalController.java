@@ -68,12 +68,13 @@ public class AnimalController {
         return ResponseEntity.ok(animalService.getAll(pageable));
     }
 
-    @GetMapping("/{name}")
-    @Operation(summary = "Buscar animal por nome", description = "Busca um animal pelo seu nome")
-    public ResponseEntity<AnimalEntity> getByName(@PathVariable String name) {
-        return animalService.getByName(name)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/name/{name}")
+    @Operation(summary = "Buscar animal por nome", description = "Busca animais pelo nome com paginação")
+    public ResponseEntity<Page<AnimalEntity>> getByName(
+            @PathVariable String name,
+            @PageableDefault(page = 0, size = 10) Pageable pageable
+    ) {
+        return ResponseEntity.ok(animalService.getByName(name, pageable));
     }
 
     @PutMapping("/edit/{id}")

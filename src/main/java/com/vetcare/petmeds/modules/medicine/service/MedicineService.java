@@ -23,8 +23,8 @@ public class MedicineService {
         return medicineRepository.findAll(pageable);
     }
 
-    public List<MedicineEntity> getByName(String name) {
-        return medicineRepository.findByNameContainingIgnoreCase(name);
+    public Page<MedicineEntity> getByName(String name, Pageable pageable) {
+        return medicineRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
     public MedicineEntity createMedicine(MedicineEntity medicine) {

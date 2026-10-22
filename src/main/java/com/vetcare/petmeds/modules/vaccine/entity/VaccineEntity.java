@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tb_vaccine")
-public class vaccineEntity {
+public class VaccineEntity {
 
 
     @Id
