@@ -35,7 +35,13 @@ public class VaccineService {
         VaccineEntity isExisting = vaccineRepository.findById(newVaccineEntity.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado uma vacina com o Id informado"));
 
-        return vaccineRepository.save(newVaccineEntity);
+        if (newVaccineEntity.getVaccineName() != null) { isExisting.setVaccineName(newVaccineEntity.getVaccineName()); }
+        if (newVaccineEntity.getDescription() != null) { isExisting.setDescription(newVaccineEntity.getDescription()); }
+        if (newVaccineEntity.getNumOfDoses() != null) { isExisting.setNumOfDoses(newVaccineEntity.getNumOfDoses()); }
+        if (newVaccineEntity.getDayInterval() != null) { isExisting.setDayInterval(newVaccineEntity.getDayInterval()); }
+        if (newVaccineEntity.getSpecie() != null) { isExisting.setSpecie(newVaccineEntity.getSpecie()); }
+
+        return vaccineRepository.save(isExisting);
     }
 
     public void delete(Long id) {

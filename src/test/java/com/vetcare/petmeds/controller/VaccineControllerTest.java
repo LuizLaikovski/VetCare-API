@@ -3,6 +3,7 @@ package com.vetcare.petmeds.controller;
 import com.vetcare.petmeds.modules.vaccine.controller.VaccineController;
 import com.vetcare.petmeds.modules.vaccine.entity.VaccineEntity;
 import com.vetcare.petmeds.modules.vaccine.service.VaccineService;
+import com.vetcare.petmeds.modules.animal.entity.Specie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class VaccineControllerTest {
         vaccine.setDescription("Vacina contra raiva");
         vaccine.setNumOfDoses(1);
         vaccine.setDayInterval(365);
+        vaccine.setSpecie(Specie.Cachorro);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.vetcare.petmeds.modules.vaccine.entity;
 
+import com.vetcare.petmeds.modules.animal.entity.Specie;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,4 +30,8 @@ public class VaccineEntity {
 
     @Column(nullable = false, name = "vac_dayinterval")
     private Integer dayInterval;
+
+    @Column(nullable = false, name = "vac_specie")
+    @Enumerated(EnumType.STRING)
+    private Specie specie;
 }
