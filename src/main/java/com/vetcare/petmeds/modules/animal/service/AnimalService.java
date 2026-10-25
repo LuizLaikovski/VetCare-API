@@ -8,34 +8,41 @@ import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
 import com.vetcare.petmeds.shared.ResponseDTO;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class AnimalService {
+    private static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
     private AnimalRepository animalRepository;
     private MedicineRepository medicineRepository;
 
     public Page<AnimalEntity> getAll(Pageable pageable) {
-        return animalRepository.findAll(pageable);
+        Page<AnimalEntity> page = animalRepository.findAll(pageable);
+        logger.info("Listagem de animais obtida com sucesso");
+        return page;
     }
 
     public AnimalEntity getById(Long id) {
-        return animalRepository.findById(id)
+        AnimalEntity animal = animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado"));
+        logger.info("Animal encontrado com sucesso para ID: {}", id);
+        return animal;
     }
 
     public Page<AnimalEntity> getByName(String name, Pageable pageable) {
-        return animalRepository.findByNameContainingIgnoreCase(name, pageable);
+        Page<AnimalEntity> page = animalRepository.findByNameContainingIgnoreCase(name, pageable);
+        logger.info("Busca de animais por nome obtida com sucesso");
+        return page;
     }
 
     public ResponseDTO setMedicine(Long idAnimal, Long idMedicine) {
@@ -56,6 +63,7 @@ public class AnimalService {
 
         animalRepository.save(animalExist);
 
+        logger.info("Medicamento ID {} associado com sucesso ao animal ID {}", idMedicine, idAnimal);
         return new ResponseDTO(
                 new Date(),
                 "Medicamento salvo com sucesso",
@@ -64,11 +72,12 @@ public class AnimalService {
     }
 
     public AnimalEntity createNewAnimal(AnimalEntity animal) {
-        return animalRepository.save(animal);
+        AnimalEntity saved = animalRepository.save(animal);
+        logger.info("Animal criado com sucesso: {}", saved.getName());
+        return saved;
     }
 
     public AnimalEntity updateAnimal(Long id, AnimalEntity animal)  {
-
         AnimalEntity existing = getById(id);
 
         if (animal.getName() != null) {
@@ -91,11 +100,14 @@ public class AnimalService {
             existing.setWeight(animal.getWeight());
         }
 
-        return animalRepository.save(existing);
+        AnimalEntity saved = animalRepository.save(existing);
+        logger.info("Animal atualizado com sucesso ID: {}", id);
+        return saved;
     }
 
     public ResponseEntity<ResponseDTO> deleteById(Long id) {
         animalRepository.deleteById(id);
+        logger.info("Animal deletado com sucesso ID: {}", id);
         ResponseDTO responseDTO = new ResponseDTO(new Date(), "Animal deletado com sucesso", "Animal deletado com sucesso");
         return new ResponseEntity<>(responseDTO, HttpStatus.NO_CONTENT);
     }
@@ -104,7 +116,7 @@ public class AnimalService {
         for (AnimalEntity animal : animals) {
             createNewAnimal(animal);
         }
-
+        logger.info("Lote de {} animais cadastrado com sucesso", animals.size());
         return new ResponseLoginDTO("Os "+ animals.toArray().length +" foram cadastrado com sucesso");
     }
 }

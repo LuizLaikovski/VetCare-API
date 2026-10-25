@@ -36,8 +36,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String contextPath = request.getContextPath();
         String requestPath = path.substring(contextPath.length());
-        
-        System.out.println(">>> Requisição para: " + requestPath); // LOG DEBUG
 
         // Usar AntPathMatcher para verificar se a rota é pública
         org.springframework.util.AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
@@ -62,7 +60,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String authHeader = request.getHeader("Authorization");
-        System.out.println(">>> AuthHeader: " + authHeader); // LOG DEBUG
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             ErrorDTO errorDTO = new ErrorDTO(
@@ -81,14 +78,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
         String userEmail = tokenService.validateToken(token);
-        System.out.println(">>> UserEmail extraído: " + userEmail); // LOG DEBUG
 
         if (userEmail != null) {
             userRepository.findByEmail(userEmail).ifPresent(user -> {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         user, null, user.getAutorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println(">>> Contexto de segurança configurado para: " + userEmail); // LOG DEBUG
             });
         }
  else {

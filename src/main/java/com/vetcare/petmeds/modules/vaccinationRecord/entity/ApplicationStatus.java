@@ -1,4 +1,4 @@
-package com.vetcare.petmeds.modules.VaccinationRecord.entity;
+package com.vetcare.petmeds.modules.vaccinationRecord.entity;
 
 public enum ApplicationStatus {
     APPLIED, // Aplicada

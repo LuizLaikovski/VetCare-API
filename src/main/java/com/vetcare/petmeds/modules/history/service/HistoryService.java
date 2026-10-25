@@ -10,6 +10,8 @@ import com.vetcare.petmeds.modules.history.repository.HistoryRepository;
 import com.vetcare.petmeds.modules.initialCheckUp.entity.InitialCheckUpEntity;
 import com.vetcare.petmeds.modules.initialCheckUp.repository.InitialCheckUpRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @Transactional
 public class HistoryService {
+    private static final Logger logger = LoggerFactory.getLogger(HistoryService.class);
     HistoryRepository repository;
     AnimalRepository animalRepository;
     InitialCheckUpRepository initialCheckUpRepository;
@@ -94,7 +97,9 @@ public class HistoryService {
         history.setAnimal(animal);
         history.setCheckUp(checkUp);
 
-        return mapToDTO(repository.save(history));
+        HistoryResponseDTO response = mapToDTO(repository.save(history));
+        logger.info("Histórico criado com sucesso para animal ID: {}", requestDTO.getIdAnimal());
+        return response;
     }
 
     public HistoryResponseDTO update(Long id, HistoryRequestDTO requestDTO) {
@@ -107,7 +112,9 @@ public class HistoryService {
         history.setAnimal(animal);
         history.setCheckUp(checkUp);
 
-        return mapToDTO(repository.save(history));
+        HistoryResponseDTO response = mapToDTO(repository.save(history));
+        logger.info("Histórico atualizado com sucesso ID: {}", id);
+        return response;
     }
 
     public void delete(Long id) {
@@ -115,11 +122,14 @@ public class HistoryService {
             throw new ResourceNotFoundException("Histórico não encontrado.");
         }
         repository.deleteById(id);
+        logger.info("Histórico deletado com sucesso ID: {}", id);
     }
 
     @Transactional(readOnly = true)
     public HistoryResponseDTO findById(Long id) {
-        return mapToDTO(findEntityById(id));
+        HistoryResponseDTO response = mapToDTO(findEntityById(id));
+        logger.info("Histórico buscado com sucesso ID: {}", id);
+        return response;
     }
 
     public HistoryEntity findEntityById(Long id) {
@@ -130,6 +140,8 @@ public class HistoryService {
 
     @Transactional(readOnly = true)
     public Page<HistoryResponseDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(this::mapToDTO);
+        Page<HistoryResponseDTO> page = repository.findAll(pageable).map(this::mapToDTO);
+        logger.info("Listagem de históricos obtida com sucesso");
+        return page;
     }
 }

@@ -10,6 +10,8 @@ import com.vetcare.petmeds.modules.user.entity.TypeUser;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;
 import com.vetcare.petmeds.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +22,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class UserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private TokenService tokenService;
@@ -37,19 +40,26 @@ public class UserService {
         }
 
         userRepository.save(userEntity);
+        logger.info("Usuário criado com sucesso: {}", user.getEmail());
         return new ResponseLoginDTO("Usuario Criado com sucesso!");
     }
 
     public Page<UserEntity> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        Page<UserEntity> page = userRepository.findAll(pageable);
+        logger.info("Listagem de usuários obtida com sucesso");
+        return page;
     }
 
     public UserEntity getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado!"));
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado!"));
+        logger.info("Usuário buscado com sucesso ID: {}", id);
+        return user;
     }
 
     public UserEntity getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Este email não possui cadastro!"));
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Este email não possui cadastro!"));
+        logger.info("Usuário buscado com sucesso por e-mail: {}", email);
+        return user;
     }
 
     public ResponseLoginDTO login(String email, String password) {
@@ -68,6 +78,7 @@ public class UserService {
                 user.getTypeUser()
         );
 
+        logger.info("Login realizado com sucesso para usuário: {}", email);
         return new ResponseLoginDTO("Login realizado com sucesso!", userResponseDTO, generatedToken);
     }
 
@@ -76,6 +87,7 @@ public class UserService {
             token = token.substring(7);
         }
         tokenService.revokeToken(token);
+        logger.info("Logout realizado com sucesso");
     }
 
     public ResponseLoginDTO updateUser(Long id, UserEntity user) {
@@ -98,7 +110,7 @@ public class UserService {
         }
 
         userRepository.save(oldUser);
-
+        logger.info("Usuário atualizado com sucesso ID: {}", id);
         return new ResponseLoginDTO("O usuario foi atualizado com sucesso!");
     }
 
@@ -107,6 +119,7 @@ public class UserService {
             throw new ResourceNotFoundException("Usuário não encontrado!");
         }
         userRepository.deleteById(id);
+        logger.info("Usuário removido com sucesso ID: {}", id);
         return new ResponseLoginDTO("O usuario foi removido com sucesso!");
     }
 

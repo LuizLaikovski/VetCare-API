@@ -1,4 +1,4 @@
-package com.vetcare.petmeds.modules.VaccinationRecord.entity;
+package com.vetcare.petmeds.modules.vaccinationRecord.entity;
 
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;

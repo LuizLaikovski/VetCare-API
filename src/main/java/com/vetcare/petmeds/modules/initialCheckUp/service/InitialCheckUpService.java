@@ -10,6 +10,8 @@ import com.vetcare.petmeds.modules.initialCheckUp.repository.InitialCheckUpRepos
 import com.vetcare.petmeds.modules.user.dto.UserResponseDTO;
 import com.vetcare.petmeds.modules.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 @Service
 @AllArgsConstructor
 public class InitialCheckUpService {
+    private static final Logger logger = LoggerFactory.getLogger(InitialCheckUpService.class);
     private InitialCheckUpRepository repository;
     private AnimalRepository animalRepository;
     private UserRepository userRepository;
@@ -85,16 +88,22 @@ public class InitialCheckUpService {
         entity.setVeterinarian(userRepository.findById(dto.getVeterinarianId())
                 .orElseThrow(() -> new ResourceNotFoundException("Veterinário não encontrado")));
         
-        return mapToDTO(repository.save(entity));
+        InitialCheckUpResponseDTO response = mapToDTO(repository.save(entity));
+        logger.info("Check-up inicial criado com sucesso para animal ID: {}", dto.getAnimalId());
+        return response;
     }
 
     public Page<InitialCheckUpResponseDTO> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(this::mapToDTO);
+        Page<InitialCheckUpResponseDTO> page = repository.findAll(pageable).map(this::mapToDTO);
+        logger.info("Listagem de check-ups iniciais obtida com sucesso");
+        return page;
     }
 
     public InitialCheckUpResponseDTO findById(Long id) {
-        return mapToDTO(repository.findById(id)
+        InitialCheckUpResponseDTO response = mapToDTO(repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado")));
+        logger.info("Check-up inicial buscado com sucesso ID: {}", id);
+        return response;
     }
 
     public InitialCheckUpResponseDTO update(Long id, InitialCheckUpDTO dto) {
@@ -107,7 +116,9 @@ public class InitialCheckUpService {
         existing.setVeterinarian(userRepository.findById(dto.getVeterinarianId())
                 .orElseThrow(() -> new ResourceNotFoundException("Veterinário não encontrado")));
         
-        return mapToDTO(repository.save(existing));
+        InitialCheckUpResponseDTO response = mapToDTO(repository.save(existing));
+        logger.info("Check-up inicial atualizado com sucesso ID: {}", id);
+        return response;
     }
 
     public void delete(Long id) {
@@ -115,17 +126,24 @@ public class InitialCheckUpService {
                 .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado"));
 
         repository.deleteById(id);
+        logger.info("Check-up inicial deletado com sucesso ID: {}", id);
     }
 
     public Page<InitialCheckUpResponseDTO> findByAnimalId(Long animalId, Pageable pageable) {
-        return repository.findByAnimalId(animalId, pageable).map(this::mapToDTO);
+        Page<InitialCheckUpResponseDTO> page = repository.findByAnimalId(animalId, pageable).map(this::mapToDTO);
+        logger.info("Busca de check-ups por animal ID obtida com sucesso");
+        return page;
     }
 
     public Page<InitialCheckUpResponseDTO> findByVeterinarianId(Long veterinarianId, Pageable pageable) {
-        return repository.findByVeterinarianId(veterinarianId, pageable).map(this::mapToDTO);
+        Page<InitialCheckUpResponseDTO> page = repository.findByVeterinarianId(veterinarianId, pageable).map(this::mapToDTO);
+        logger.info("Busca de check-ups por veterinário ID obtida com sucesso");
+        return page;
     }
 
     public Page<InitialCheckUpResponseDTO> findByDateRange(LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        return repository.findByExaminationDateBetween(start, end, pageable).map(this::mapToDTO);
+        Page<InitialCheckUpResponseDTO> page = repository.findByExaminationDateBetween(start, end, pageable).map(this::mapToDTO);
+        logger.info("Busca de check-ups por intervalo de datas obtida com sucesso");
+        return page;
     }
 }

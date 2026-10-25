@@ -4,6 +4,8 @@ import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.modules.vaccine.entity.VaccineEntity;
 import com.vetcare.petmeds.modules.vaccine.repository.VaccineRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,21 +16,32 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class VaccineService {
+    private static final Logger logger = LoggerFactory.getLogger(VaccineService.class);
     private VaccineRepository vaccineRepository;
 
-    public Page<VaccineEntity> getAll(Pageable pageable) { return vaccineRepository.findAll(pageable); }
+    public Page<VaccineEntity> getAll(Pageable pageable) {
+        Page<VaccineEntity> page = vaccineRepository.findAll(pageable);
+        logger.info("Listagem de vacinas obtida com sucesso");
+        return page;
+    }
 
     public VaccineEntity getById(Long id) {
-        return vaccineRepository.findById(id)
+        VaccineEntity vaccine = vaccineRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vacina não encontrada"));
+        logger.info("Vacina buscada com sucesso ID: {}", id);
+        return vaccine;
     }
 
     public Page<VaccineEntity> getByName(String name, Pageable pageable) {
-        return vaccineRepository.findByVaccineNameContainingIgnoreCase(name, pageable);
+        Page<VaccineEntity> page = vaccineRepository.findByVaccineNameContainingIgnoreCase(name, pageable);
+        logger.info("Busca de vacinas por nome obtida com sucesso");
+        return page;
     }
 
     public VaccineEntity createVaccine(VaccineEntity vaccineEntity) {
-        return vaccineRepository.save(vaccineEntity);
+        VaccineEntity saved = vaccineRepository.save(vaccineEntity);
+        logger.info("Vacina criada com sucesso: {}", saved.getVaccineName());
+        return saved;
     }
 
     public VaccineEntity updateVaccine(VaccineEntity newVaccineEntity) {
@@ -41,7 +54,9 @@ public class VaccineService {
         if (newVaccineEntity.getDayInterval() != null) { isExisting.setDayInterval(newVaccineEntity.getDayInterval()); }
         if (newVaccineEntity.getSpecie() != null) { isExisting.setSpecie(newVaccineEntity.getSpecie()); }
 
-        return vaccineRepository.save(isExisting);
+        VaccineEntity saved = vaccineRepository.save(isExisting);
+        logger.info("Vacina atualizada com sucesso ID: {}", saved.getId());
+        return saved;
     }
 
     public void delete(Long id) {
@@ -49,5 +64,6 @@ public class VaccineService {
             throw new ResourceNotFoundException("Vacina não encontrada.");
         }
         vaccineRepository.deleteById(id);
+        logger.info("Vacina deletada com sucesso ID: {}", id);
     }
 }
