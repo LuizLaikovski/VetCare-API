@@ -1,16 +1,22 @@
 package com.vetcare.petmeds.model.animal;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
+import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
 import com.vetcare.petmeds.modules.animal.service.AnimalService;
 import com.vetcare.petmeds.modules.animal.entity.Specie;
+import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
+import com.vetcare.petmeds.modules.medicine.service.MedicineService;
+import com.vetcare.petmeds.shared.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +24,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,6 +32,9 @@ public class AnimalServiceTest {
 
     @Mock
     private AnimalRepository animalRepository;
+
+    @Mock
+    private MedicineService medicineService;
 
     @InjectMocks
     private AnimalService animalService;
@@ -45,14 +55,14 @@ public class AnimalServiceTest {
     @Test
     void getAll_ShouldReturnListOfAnimals() {
         List<AnimalEntity> animals = Arrays.asList(animal);
-        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(animals);
-        when(animalRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+        Page<AnimalEntity> page = new PageImpl<>(animals);
+        when(animalRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-        org.springframework.data.domain.Page<AnimalEntity> result = animalService.getAll(org.springframework.data.domain.Pageable.unpaged());
+        Page<AnimalEntity> result = animalService.getAll(Pageable.unpaged());
 
         assertEquals(1, result.getContent().size());
         assertEquals("Rex", result.getContent().get(0).getName());
-        verify(animalRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
+        verify(animalRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -70,21 +80,42 @@ public class AnimalServiceTest {
     void getById_ShouldThrowExceptionWhenNotFound() {
         when(animalRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> animalService.getById(1L));
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
+                () -> animalService.getById(1L)
+        );
 
         assertEquals("Animal não encontrado", exception.getMessage());
     }
 
     @Test
     void getByName_ShouldReturnPageOfAnimalsMatchingName() {
-        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(animal));
-        when(animalRepository.findByNameContainingIgnoreCase(eq("Rex"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+        Page<AnimalEntity> page = new PageImpl<>(Arrays.asList(animal));
+        when(animalRepository.findByNameContainingIgnoreCase(eq("Rex"), any(Pageable.class))).thenReturn(page);
 
-        org.springframework.data.domain.Page<AnimalEntity> result = animalService.getByName("Rex", org.springframework.data.domain.Pageable.unpaged());
+        Page<AnimalEntity> result = animalService.getByName("Rex", Pageable.unpaged());
 
         assertFalse(result.isEmpty());
         assertEquals("Rex", result.getContent().get(0).getName());
-        verify(animalRepository, times(1)).findByNameContainingIgnoreCase(eq("Rex"), any(org.springframework.data.domain.Pageable.class));
+        verify(animalRepository, times(1)).findByNameContainingIgnoreCase(eq("Rex"), any(Pageable.class));
+    }
+
+    @Test
+    void setMedicine_ShouldAddMedicineAndReturnResponse() {
+        MedicineEntity medicine = new MedicineEntity();
+        medicine.setId(10L);
+        medicine.setName("Vitamina C");
+
+        when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
+        when(medicineService.getMedicineByIdEntity(10L)).thenReturn(medicine);
+        when(animalRepository.save(any(AnimalEntity.class))).thenReturn(animal);
+
+        ResponseDTO response = animalService.setMedicine(1L, 10L);
+
+        assertNotNull(response);
+        assertEquals("Medicamento salvo com sucesso", response.getMessage());
+        assertTrue(animal.getMedicine().contains(medicine));
+        verify(animalRepository, times(1)).save(animal);
     }
 
     @Test
@@ -103,6 +134,8 @@ public class AnimalServiceTest {
         AnimalEntity updatedInfo = new AnimalEntity();
         updatedInfo.setName("Rex Updated");
         updatedInfo.setWeight(32.0);
+        updatedInfo.setAge(6);
+        updatedInfo.setRace("Labrador");
 
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
         when(animalRepository.save(any(AnimalEntity.class))).thenReturn(animal);
@@ -110,29 +143,41 @@ public class AnimalServiceTest {
         AnimalEntity result = animalService.updateAnimal(1L, updatedInfo);
 
         assertNotNull(result);
-        assertEquals("Rex Updated", result.getName());
         assertEquals(32.0, result.getWeight());
+        assertEquals(6, result.getAge());
+        assertEquals("Labrador", result.getRace());
         verify(animalRepository, times(1)).save(animal);
     }
 
     @Test
-    void deleteById_ShouldReturnSuccessResponse() {
+    void updateAnimal_ShouldThrowExceptionWhenNotFound() {
+        when(animalRepository.findById(1L)).thenReturn(Optional.empty());
+
+        AnimalEntity updatedInfo = new AnimalEntity();
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> animalService.updateAnimal(1L, updatedInfo)
+        );
+    }
+
+    @Test
+    void deleteById_ShouldDeleteSuccessfullyWhenExists() {
+        when(animalRepository.existsById(1L)).thenReturn(true);
         doNothing().when(animalRepository).deleteById(1L);
 
-        org.springframework.http.ResponseEntity<com.vetcare.petmeds.shared.ResponseDTO> response = animalService.deleteById(1L);
-
-        assertEquals(org.springframework.http.HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertDoesNotThrow(() -> animalService.deleteById(1L));
+        verify(animalRepository, times(1)).existsById(1L);
         verify(animalRepository, times(1)).deleteById(1L);
     }
 
     @Test
-    void createAnimals_ShouldReturnSuccessResponse() {
-        List<AnimalEntity> animals = Arrays.asList(animal, new AnimalEntity());
-        when(animalRepository.save(any(AnimalEntity.class))).thenReturn(animal);
+    void deleteById_ShouldThrowExceptionWhenNotFound() {
+        when(animalRepository.existsById(1L)).thenReturn(false);
 
-        ResponseLoginDTO response = animalService.createAnimals(animals);
-
-        assertTrue(response.getResponse().contains("cadastrado com sucesso"));
-        verify(animalRepository, times(2)).save(any(AnimalEntity.class));
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> animalService.deleteById(1L)
+        );
+        verify(animalRepository, never()).deleteById(anyLong());
     }
 }

@@ -27,123 +27,64 @@ public class InitialCheckUpService {
     private AnimalRepository animalRepository;
     private UserRepository userRepository;
 
-    public InitialCheckUpResponseDTO mapToDTO(InitialCheckUpEntity entity) {
-        AnimalResponseDTO animalDTO = AnimalResponseDTO.builder()
-                .id(entity.getAnimal().getId())
-                .name(entity.getAnimal().getName())
-                .specie(entity.getAnimal().getSpecie())
-                .race(entity.getAnimal().getRace())
-                .gender(entity.getAnimal().getGender())
-                .build();
-
-        UserResponseDTO vetDTO = new UserResponseDTO(
-                entity.getVeterinarian().getId(),
-                entity.getVeterinarian().getName(),
-                entity.getVeterinarian().getEmail(),
-                entity.getVeterinarian().getTypeUser()
-        );
-
-        return InitialCheckUpResponseDTO.builder()
-                .id(entity.getId())
-                .examinationDate(entity.getExaminationDate())
-                .species(entity.getSpecies())
-                .sex(entity.getSex())
-                .animal(animalDTO)
-                .veterinarian(vetDTO)
-                .crt(entity.getCrt())
-                .rr(entity.getRr())
-                .hr(entity.getHr())
-                .tpc(entity.getTpc())
-                .hydration(entity.getHydration())
-                .arterialPulse(entity.getArterialPulse())
-                .mucousMembranes(entity.getMucousMembranes())
-                .consciousnessLevel(entity.getConsciousnessLevel())
-                .nutritionalStatus(entity.getNutritionalStatus())
-                .behavior(entity.getBehavior())
-                .hasEctoparasites(entity.getHasEctoparasites())
-                .ectoparasitesDetails(entity.getEctoparasitesDetails())
-                .postureMovement(entity.getPostureMovement())
-                .eyes(entity.getEyes())
-                .ears(entity.getEars())
-                .oralCavity(entity.getOralCavity())
-                .respiratory(entity.getRespiratory())
-                .circulatory(entity.getCirculatory())
-                .hemolymphatic(entity.getHemolymphatic())
-                .digestive(entity.getDigestive())
-                .genital(entity.getGenital())
-                .urinary(entity.getUrinary())
-                .nervous(entity.getNervous())
-                .skinAndAppendages(entity.getSkinAndAppendages())
-                .otherStatus(entity.getOtherStatus())
-                .otherObservations(entity.getOtherObservations())
-                .build();
-    }
-
     public InitialCheckUpResponseDTO create(InitialCheckUpDTO dto) {
-        InitialCheckUpEntity entity = new InitialCheckUpEntity();
-        BeanUtils.copyProperties(dto, entity);
-        
+        InitialCheckUpEntity entity = new InitialCheckUpEntity(dto);
+
         entity.setAnimal(animalRepository.findById(dto.getAnimalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado")));
         entity.setVeterinarian(userRepository.findById(dto.getVeterinarianId())
                 .orElseThrow(() -> new ResourceNotFoundException("Veterinário não encontrado")));
-        
-        InitialCheckUpResponseDTO response = mapToDTO(repository.save(entity));
+
+        InitialCheckUpResponseDTO response = new InitialCheckUpResponseDTO(repository.save(entity));
+
         logger.info("Check-up inicial criado com sucesso para animal ID: {}", dto.getAnimalId());
         return response;
     }
 
     public Page<InitialCheckUpResponseDTO> findAll(Pageable pageable) {
-        Page<InitialCheckUpResponseDTO> page = repository.findAll(pageable).map(this::mapToDTO);
-        logger.info("Listagem de check-ups iniciais obtida com sucesso");
-        return page;
+        return repository.findAll(pageable).map(InitialCheckUpResponseDTO::new);
     }
 
     public InitialCheckUpResponseDTO findById(Long id) {
-        InitialCheckUpResponseDTO response = mapToDTO(repository.findById(id)
+        return new InitialCheckUpResponseDTO(repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado")));
-        logger.info("Check-up inicial buscado com sucesso ID: {}", id);
-        return response;
+    }
+
+    public InitialCheckUpEntity findByIdEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado"));
     }
 
     public InitialCheckUpResponseDTO update(Long id, InitialCheckUpDTO dto) {
         InitialCheckUpEntity existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado"));
-        BeanUtils.copyProperties(dto, existing, "id");
-        
+
         existing.setAnimal(animalRepository.findById(dto.getAnimalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado")));
+
         existing.setVeterinarian(userRepository.findById(dto.getVeterinarianId())
                 .orElseThrow(() -> new ResourceNotFoundException("Veterinário não encontrado")));
-        
-        InitialCheckUpResponseDTO response = mapToDTO(repository.save(existing));
+
         logger.info("Check-up inicial atualizado com sucesso ID: {}", id);
-        return response;
+        return new InitialCheckUpResponseDTO(repository.save(existing));
     }
 
     public void delete(Long id) {
-        InitialCheckUpEntity initialCheckUpEntity = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado"));
-
+        repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Checkup não encontrado"));
         repository.deleteById(id);
         logger.info("Check-up inicial deletado com sucesso ID: {}", id);
     }
 
     public Page<InitialCheckUpResponseDTO> findByAnimalId(Long animalId, Pageable pageable) {
-        Page<InitialCheckUpResponseDTO> page = repository.findByAnimalId(animalId, pageable).map(this::mapToDTO);
         logger.info("Busca de check-ups por animal ID obtida com sucesso");
-        return page;
+        return repository.findByAnimalId(animalId, pageable).map(InitialCheckUpResponseDTO::new);
     }
 
     public Page<InitialCheckUpResponseDTO> findByVeterinarianId(Long veterinarianId, Pageable pageable) {
-        Page<InitialCheckUpResponseDTO> page = repository.findByVeterinarianId(veterinarianId, pageable).map(this::mapToDTO);
-        logger.info("Busca de check-ups por veterinário ID obtida com sucesso");
-        return page;
+        return repository.findByVeterinarianId(veterinarianId, pageable).map(InitialCheckUpResponseDTO::new);
     }
 
     public Page<InitialCheckUpResponseDTO> findByDateRange(LocalDateTime start, LocalDateTime end, Pageable pageable) {
-        Page<InitialCheckUpResponseDTO> page = repository.findByExaminationDateBetween(start, end, pageable).map(this::mapToDTO);
-        logger.info("Busca de check-ups por intervalo de datas obtida com sucesso");
-        return page;
+        return repository.findByExaminationDateBetween(start, end, pageable).map(InitialCheckUpResponseDTO::new);
     }
 }

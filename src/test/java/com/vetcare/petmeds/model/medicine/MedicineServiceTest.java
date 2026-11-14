@@ -1,16 +1,21 @@
 package com.vetcare.petmeds.model.medicine;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
+import com.vetcare.petmeds.exception.ResourceNotFoundException;
+import com.vetcare.petmeds.modules.medicine.dto.MedicineResponseDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
 import com.vetcare.petmeds.modules.medicine.service.MedicineService;
 import com.vetcare.petmeds.modules.medicine.entity.TypeMedicine;
+import com.vetcare.petmeds.shared.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +23,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,55 +49,54 @@ public class MedicineServiceTest {
     }
 
     @Test
-    void getMedicineById_ShouldReturnMedicineWhenExists() {
+    void getMedicineById_ShouldReturnMedicineResponseWhenExists() {
         when(medicineRepository.findById(1L)).thenReturn(Optional.of(medicine));
 
-        MedicineEntity result = medicineService.getMedicineById(1L);
+        MedicineResponseDTO result = medicineService.getMedicineById(1L);
 
         assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertEquals("Paracetamol", result.getName());
         verify(medicineRepository, times(1)).findById(1L);
     }
 
     @Test
-    void getMedicineById_ShouldReturnNullWhenNotExists() {
+    void getMedicineById_ShouldThrowExceptionWhenNotExists() {
         when(medicineRepository.findById(1L)).thenReturn(Optional.empty());
 
-        MedicineEntity result = medicineService.getMedicineById(1L);
-
-        assertNull(result);
+        assertThrows(ResourceNotFoundException.class, () -> medicineService.getMedicineById(1L));
         verify(medicineRepository, times(1)).findById(1L);
     }
 
     @Test
     void getAllMedicines_ShouldReturnListOfMedicines() {
         List<MedicineEntity> medicines = Arrays.asList(medicine);
-        org.springframework.data.domain.Page<MedicineEntity> page = new org.springframework.data.domain.PageImpl<>(medicines);
-        when(medicineRepository.findAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+        Page<MedicineEntity> page = new PageImpl<>(medicines);
+        when(medicineRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-        org.springframework.data.domain.Page<MedicineEntity> result = medicineService.getAllMedicines(org.springframework.data.domain.Pageable.unpaged());
+        Page<MedicineResponseDTO> result = medicineService.getAllMedicines(Pageable.unpaged());
 
         assertEquals(1, result.getContent().size());
-        verify(medicineRepository, times(1)).findAll(any(org.springframework.data.domain.Pageable.class));
+        assertEquals("Paracetamol", result.getContent().get(0).getName());
+        verify(medicineRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
     void getByName_ShouldReturnPageOfMedicinesMatchingName() {
-        org.springframework.data.domain.Page<MedicineEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(medicine));
-        when(medicineRepository.findByNameContainingIgnoreCase(eq("para"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
+        Page<MedicineEntity> page = new PageImpl<>(Arrays.asList(medicine));
+        when(medicineRepository.findByNameContainingIgnoreCase(eq("para"), any(Pageable.class))).thenReturn(page);
 
-        org.springframework.data.domain.Page<MedicineEntity> result = medicineService.getByName("para", org.springframework.data.domain.Pageable.unpaged());
+        Page<MedicineResponseDTO> result = medicineService.getByName("para", Pageable.unpaged());
 
         assertEquals(1, result.getContent().size());
         assertEquals("Paracetamol", result.getContent().get(0).getName());
-        verify(medicineRepository, times(1)).findByNameContainingIgnoreCase(eq("para"), any(org.springframework.data.domain.Pageable.class));
+        verify(medicineRepository, times(1)).findByNameContainingIgnoreCase(eq("para"), any(Pageable.class));
     }
 
     @Test
-    void createMedicine_ShouldReturnSavedMedicine() {
+    void createMedicine_ShouldReturnSavedMedicineResponse() {
         when(medicineRepository.save(any(MedicineEntity.class))).thenReturn(medicine);
 
-        MedicineEntity result = medicineService.createMedicine(medicine);
+        MedicineResponseDTO result = medicineService.createMedicine(medicine);
 
         assertNotNull(result);
         assertEquals("Paracetamol", result.getName());
@@ -99,38 +104,32 @@ public class MedicineServiceTest {
     }
 
     @Test
-    void createAllsMedicine_ShouldReturnSuccessResponse() {
-        List<MedicineEntity> medicines = Arrays.asList(medicine, new MedicineEntity());
-        when(medicineRepository.save(any(MedicineEntity.class))).thenReturn(medicine);
-
-        ResponseLoginDTO response = medicineService.createAllsMedicine(medicines);
-
-        assertTrue(response.getResponse().contains("medicamentos foram criados com sucesso"));
-        verify(medicineRepository, times(2)).save(any(MedicineEntity.class));
-    }
-
-    @Test
-    void updateMedicine_ShouldReturnUpdatedMedicine() {
+    void updateMedicine_ShouldReturnUpdatedMedicineResponse() {
         MedicineEntity updatedInfo = new MedicineEntity();
         updatedInfo.setName("Paracetamol Updated");
+        updatedInfo.setManufacturer("PharmaCorp");
+        updatedInfo.setType(TypeMedicine.pill);
+        updatedInfo.setIndicatedSpecies("Dog");
+        updatedInfo.setDosage("1000mg");
 
         when(medicineRepository.findById(1L)).thenReturn(Optional.of(medicine));
         when(medicineRepository.save(any(MedicineEntity.class))).thenReturn(medicine);
 
-        MedicineEntity result = medicineService.updateMedicine(1L, updatedInfo);
+        MedicineResponseDTO result = medicineService.updateMedicine(1L, updatedInfo);
 
         assertNotNull(result);
-        assertEquals("Paracetamol Updated", result.getName());
-        verify(medicineRepository, times(1)).save(medicine);
+        verify(medicineRepository, times(1)).save(any(MedicineEntity.class));
     }
 
     @Test
-    void deleteMedicine_ShouldReturnSuccessResponse() {
+    void deleteMedicine_ShouldReturnResponse() {
+        when(medicineRepository.findById(1L)).thenReturn(Optional.of(medicine));
         doNothing().when(medicineRepository).deleteById(1L);
 
-        ResponseLoginDTO response = medicineService.deleteMedicine(1L);
+        ResponseDTO response = medicineService.deleteMedicine(1L);
 
-        assertEquals("Medicine deleted successfully", response.getResponse());
+        assertNotNull(response);
+        assertEquals("Deletado", response.getMessage());
         verify(medicineRepository, times(1)).deleteById(1L);
     }
 }

@@ -17,33 +17,24 @@ public class VaccineService {
     private VaccineRepository vaccineRepository;
 
     public Page<VaccineEntity> getAll(Pageable pageable) {
-        Page<VaccineEntity> page = vaccineRepository.findAll(pageable);
-        logger.info("Listagem de vacinas obtida com sucesso");
-        return page;
+        return vaccineRepository.findAll(pageable);
     }
 
     public VaccineEntity getById(Long id) {
-        VaccineEntity vaccine = vaccineRepository.findById(id)
+        return vaccineRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vacina não encontrada"));
-        logger.info("Vacina buscada com sucesso ID: {}", id);
-        return vaccine;
     }
 
     public Page<VaccineEntity> getByName(String name, Pageable pageable) {
-        Page<VaccineEntity> page = vaccineRepository.findByVaccineNameContainingIgnoreCase(name, pageable);
-        logger.info("Busca de vacinas por nome obtida com sucesso");
-        return page;
+        return vaccineRepository.findByVaccineNameContainingIgnoreCase(name, pageable);
     }
 
     public VaccineEntity createVaccine(VaccineEntity vaccineEntity) {
-        VaccineEntity saved = vaccineRepository.save(vaccineEntity);
-        logger.info("Vacina criada com sucesso: {}", saved.getVaccineName());
-        return saved;
+        return vaccineRepository.save(vaccineEntity);
     }
 
     public VaccineEntity updateVaccine(VaccineEntity newVaccineEntity) {
-        VaccineEntity isExisting = vaccineRepository.findById(newVaccineEntity.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado uma vacina com o Id informado"));
+        VaccineEntity isExisting = getById(newVaccineEntity.getId());
 
         if (newVaccineEntity.getVaccineName() != null) { isExisting.setVaccineName(newVaccineEntity.getVaccineName()); }
         if (newVaccineEntity.getDescription() != null) { isExisting.setDescription(newVaccineEntity.getDescription()); }
@@ -51,9 +42,7 @@ public class VaccineService {
         if (newVaccineEntity.getDayInterval() != null) { isExisting.setDayInterval(newVaccineEntity.getDayInterval()); }
         if (newVaccineEntity.getSpecie() != null) { isExisting.setSpecie(newVaccineEntity.getSpecie()); }
 
-        VaccineEntity saved = vaccineRepository.save(isExisting);
-        logger.info("Vacina atualizada com sucesso ID: {}", saved.getId());
-        return saved;
+        return vaccineRepository.save(isExisting);
     }
 
     public void delete(Long id) {
@@ -61,6 +50,5 @@ public class VaccineService {
             throw new ResourceNotFoundException("Vacina não encontrada.");
         }
         vaccineRepository.deleteById(id);
-        logger.info("Vacina deletada com sucesso ID: {}", id);
     }
 }

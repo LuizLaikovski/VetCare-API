@@ -1,7 +1,12 @@
 package com.vetcare.petmeds.modules.vaccinationRecord.entity;
 
 public enum ApplicationStatus {
-    APPLIED, // Aplicada
-    PENDING, // Pendente
-    LATE     // Atrasada
+    APPLIED("Aplicação"), // Aplicada
+    PENDING("Pendente"), // Pendente
+    LATE("Atrasada");     // Atrasada
+
+    String name;
+
+    ApplicationStatus(String atrasada) {
+    }
 }

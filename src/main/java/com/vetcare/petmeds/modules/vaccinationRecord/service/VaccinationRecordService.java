@@ -1,6 +1,7 @@
 package com.vetcare.petmeds.modules.vaccinationRecord.service;
 
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
+import com.vetcare.petmeds.modules.vaccinationRecord.dto.RequestEditVaccinationRecord;
 import com.vetcare.petmeds.modules.vaccinationRecord.dto.VaccinationRecordCreateDTO;
 import com.vetcare.petmeds.modules.vaccinationRecord.dto.VaccinationRecordResponseDTO;
 import com.vetcare.petmeds.modules.vaccinationRecord.entity.ApplicationStatus;
@@ -40,7 +41,7 @@ public class VaccinationRecordService {
     private UserRepository userRepository;
     private VaccineRepository vaccineRepository;
 
-    public VaccinationRecordResponseDTO mapToDTO(VaccinationRecordEntity entity) {
+    /*public VaccinationRecordResponseDTO mapToDTO(VaccinationRecordEntity entity) {
         AnimalEntity animal = entity.getAnimal();
         VaccineEntity vaccine = entity.getVaccine();
         UserEntity medic = entity.getMedic();
@@ -78,7 +79,7 @@ public class VaccinationRecordService {
                 .observation(entity.getObservation())
                 .applicationStatus(entity.getApplicationStatus() != null ? entity.getApplicationStatus().name() : null)
                 .build();
-    }
+    }*/
 
     public VaccinationRecordResponseDTO createVaccinationRecord(VaccinationRecordCreateDTO vaccinationRecordCreateDTO) {
         AnimalEntity animal = animalRepository.findById(vaccinationRecordCreateDTO.getAnimalId())
@@ -104,8 +105,8 @@ public class VaccinationRecordService {
             newVaccinationRecord.setApplicationStatus(ApplicationStatus.APPLIED);
         }
 
-        vaccinationRecordRepository.save(newVaccinationRecord);
-        VaccinationRecordResponseDTO response = mapToDTO(newVaccinationRecord);
+        VaccinationRecordEntity saved = vaccinationRecordRepository.save(newVaccinationRecord);
+        VaccinationRecordResponseDTO response = new VaccinationRecordResponseDTO(saved);
         logger.info("Aplicação de vacina registrada com sucesso!");
         return response;
     }
@@ -113,37 +114,35 @@ public class VaccinationRecordService {
     public VaccinationRecordResponseDTO findById(Long id) {
         VaccinationRecordEntity entity = vaccinationRecordRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Registro de vacinação não encontrado"));
-        VaccinationRecordResponseDTO response = mapToDTO(entity);
-        logger.info("Registro de vacinação buscado com sucesso ID: {}", id);
-        return response;
+        return new VaccinationRecordResponseDTO(entity);
     }
 
     public Page<VaccinationRecordResponseDTO> findAll(Pageable pageable) {
-        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findAll(pageable).map(this::mapToDTO);
+        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findAll(pageable).map(VaccinationRecordResponseDTO::new);
         logger.info("Listagem de registros de vacinação obtida com sucesso");
         return page;
     }
 
     public List<VaccinationRecordResponseDTO> findAllList() {
-        List<VaccinationRecordResponseDTO> list = vaccinationRecordRepository.findAll().stream().map(this::mapToDTO).toList();
+        List<VaccinationRecordResponseDTO> list = vaccinationRecordRepository.findAll().stream().map(VaccinationRecordResponseDTO::new).toList();
         logger.info("Listagem completa de registros de vacinação obtida com sucesso");
         return list;
     }
 
     public Page<VaccinationRecordResponseDTO> findByAnimalId(Long animalId, Pageable pageable) {
-        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByAnimalId(animalId, pageable).map(this::mapToDTO);
+        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByAnimalId(animalId, pageable).map(VaccinationRecordResponseDTO::new);
         logger.info("Busca de registros de vacinação por animal ID obtida com sucesso");
         return page;
     }
 
     public Page<VaccinationRecordResponseDTO> findByMedicId(Long medicId, Pageable pageable) {
-        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByMedicId(medicId, pageable).map(this::mapToDTO);
+        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByMedicId(medicId, pageable).map(VaccinationRecordResponseDTO::new);
         logger.info("Busca de registros de vacinação por médico ID obtida com sucesso");
         return page;
     }
 
     public Page<VaccinationRecordResponseDTO> findByVaccineId(Long vaccineId, Pageable pageable) {
-        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByVaccineId(vaccineId, pageable).map(this::mapToDTO);
+        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByVaccineId(vaccineId, pageable).map(VaccinationRecordResponseDTO::new);
         logger.info("Busca de registros de vacinação por vacina ID obtida com sucesso");
         return page;
     }
@@ -152,22 +151,39 @@ public class VaccinationRecordService {
         LocalDate localDate = applicationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         Date startOfDay = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         Date endOfDay = Date.from(localDate.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
-        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByApplicationDateBetween(startOfDay, endOfDay, pageable).map(this::mapToDTO);
+        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByApplicationDateBetween(startOfDay, endOfDay, pageable).map(VaccinationRecordResponseDTO::new);
         logger.info("Busca de registros de vacinação por data obtida com sucesso");
         return page;
     }
 
     public Page<VaccinationRecordResponseDTO> findByDateRange(Date startDate, Date endDate, Pageable pageable) {
-        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByApplicationDateBetween(startDate, endDate, pageable).map(this::mapToDTO);
+        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByApplicationDateBetween(startDate, endDate, pageable).map(VaccinationRecordResponseDTO::new);
         logger.info("Busca de registros de vacinação por intervalo de datas obtida com sucesso");
         return page;
     }
 
     public Page<VaccinationRecordResponseDTO> findByApplicationStatus(String status, Pageable pageable) {
         ApplicationStatus appStatus = ApplicationStatus.valueOf(status.toUpperCase());
-        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByApplicationStatus(appStatus, pageable).map(this::mapToDTO);
+        Page<VaccinationRecordResponseDTO> page = vaccinationRecordRepository.findByApplicationStatus(appStatus, pageable).map(VaccinationRecordResponseDTO::new);
         logger.info("Busca de registros de vacinação por status obtida com sucesso");
         return page;
+    }
+
+    public VaccinationRecordResponseDTO editVaccinationRecord(RequestEditVaccinationRecord requestVaccinationRecord, Long id) {
+        VaccinationRecordEntity newVaccinationRecord = verifyEntityById(id);
+
+        newVaccinationRecord.update(
+                requestVaccinationRecord.getApplicationDate(),
+                requestVaccinationRecord.getNumOfDoses(),
+                requestVaccinationRecord.getObservation()
+        );
+
+        return new VaccinationRecordResponseDTO(vaccinationRecordRepository.save(newVaccinationRecord));
+    }
+
+    public VaccinationRecordEntity verifyEntityById(Long id) {
+        return vaccinationRecordRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de Vacinação não encontrada"));
     }
 
 }

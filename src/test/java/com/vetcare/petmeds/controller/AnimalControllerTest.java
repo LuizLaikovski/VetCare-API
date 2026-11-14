@@ -1,10 +1,10 @@
 package com.vetcare.petmeds.controller;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.animal.controller.AnimalController;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.animal.service.AnimalService;
 import com.vetcare.petmeds.modules.animal.entity.Specie;
+import com.vetcare.petmeds.shared.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +14,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -61,8 +61,20 @@ public class AnimalControllerTest {
     }
 
     @Test
+    void addMedicine_ShouldReturnOk() throws Exception {
+        ResponseDTO responseDTO = new ResponseDTO(new Date(), "Medicamento salvo com sucesso", "Medicamento salvo com sucesso");
+        when(animalService.setMedicine(1L, 10L)).thenReturn(responseDTO);
+
+        mockMvc.perform(post("/animal/addMedicine")
+                        .param("idAnimal", "1")
+                        .param("idMedicine", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Medicamento salvo com sucesso"));
+    }
+
+    @Test
     void getAllAnimals_ShouldReturnOk() throws Exception {
-        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(animal));
+        var page = new PageImpl<>(Arrays.asList(animal));
         when(animalService.getAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/animal/all"))
@@ -81,7 +93,7 @@ public class AnimalControllerTest {
 
     @Test
     void getAnimalByName_ShouldReturnOk() throws Exception {
-        org.springframework.data.domain.Page<AnimalEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(animal));
+        var page = new PageImpl<>(Arrays.asList(animal));
         when(animalService.getByName(org.mockito.ArgumentMatchers.eq("Rex"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/animal/name/Rex"))
@@ -101,12 +113,8 @@ public class AnimalControllerTest {
     }
 
     @Test
-    void deleteAnimal_ShouldReturnOk() throws Exception {
-        // Since deleteById now returns ResponseEntity<ResponseDTO>, but the controller ignores it
-        // We need to mock the service call.
-        // Wait, the service returns ResponseEntity<ResponseDTO>.
-        // Let's adjust the mock to match.
-        when(animalService.deleteById(1L)).thenReturn(new org.springframework.http.ResponseEntity<>(new com.vetcare.petmeds.shared.ResponseDTO(new java.util.Date(), "Animal deletado com sucesso", "Animal deletado com sucesso"), org.springframework.http.HttpStatus.NO_CONTENT));
+    void deleteAnimal_ShouldReturnNoContent() throws Exception {
+        org.mockito.Mockito.doNothing().when(animalService).deleteById(1L);
 
         mockMvc.perform(delete("/animal/1"))
                 .andExpect(status().isNoContent());

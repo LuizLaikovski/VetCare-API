@@ -3,6 +3,7 @@ package com.vetcare.petmeds.modules.animal.service;
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
+import com.vetcare.petmeds.modules.medicine.service.MedicineService;
 import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.repository.MedicineRepository;
@@ -24,46 +25,28 @@ import java.util.List;
 public class AnimalService {
     private static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
     private AnimalRepository animalRepository;
-    private MedicineRepository medicineRepository;
+    private MedicineService medicineService;
 
     public Page<AnimalEntity> getAll(Pageable pageable) {
-        Page<AnimalEntity> page = animalRepository.findAll(pageable);
-        logger.info("Listagem de animais obtida com sucesso");
-        return page;
+        return animalRepository.findAll(pageable);
     }
 
     public AnimalEntity getById(Long id) {
-        AnimalEntity animal = animalRepository.findById(id)
+        return animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal não encontrado"));
-        logger.info("Animal encontrado com sucesso para ID: {}", id);
-        return animal;
     }
 
     public Page<AnimalEntity> getByName(String name, Pageable pageable) {
-        Page<AnimalEntity> page = animalRepository.findByNameContainingIgnoreCase(name, pageable);
-        logger.info("Busca de animais por nome obtida com sucesso");
-        return page;
+        return animalRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
     public ResponseDTO setMedicine(Long idAnimal, Long idMedicine) {
-        MedicineEntity medicineExist = medicineRepository.getById(idMedicine);
-        AnimalEntity animalExist = animalRepository.getById(idAnimal);
+        AnimalEntity animalExist = getById(idAnimal);
 
-        if (medicineExist == null) {
-            throw new ResourceNotFoundException("Medicamento não encontrado");
-        }
-
-        if (animalExist == null) {
-            throw new ResourceNotFoundException("Animal não encontrado");
-        }
-
-        animalExist.getMedicine().add(medicineExist);
-
-        medicineExist.setAnimal(animalExist);
+        animalExist.getMedicine().add(medicineService.getMedicineByIdEntity(idMedicine));
 
         animalRepository.save(animalExist);
 
-        logger.info("Medicamento ID {} associado com sucesso ao animal ID {}", idMedicine, idAnimal);
         return new ResponseDTO(
                 new Date(),
                 "Medicamento salvo com sucesso",
@@ -72,51 +55,26 @@ public class AnimalService {
     }
 
     public AnimalEntity createNewAnimal(AnimalEntity animal) {
-        AnimalEntity saved = animalRepository.save(animal);
-        logger.info("Animal criado com sucesso: {}", saved.getName());
-        return saved;
+        return animalRepository.save(animal);
     }
 
     public AnimalEntity updateAnimal(Long id, AnimalEntity animal)  {
         AnimalEntity existing = getById(id);
 
-        if (animal.getName() != null) {
-            existing.setName(animal.getName());
-        }
+        existing.update(
+                animal.getWeight(),
+                animal.getAge(),
+                animal.getRace(),
+                animal.getOwner()
+        );
 
-        if (animal.getSpecie() != null) {
-            existing.setSpecie(animal.getSpecie());
-        }
-
-        if (animal.getRace() != null) {
-            existing.setRace(animal.getRace());
-        }
-
-        if (animal.getAge() != null) {
-            existing.setAge(animal.getAge());
-        }
-
-        if (animal.getWeight() != null) {
-            existing.setWeight(animal.getWeight());
-        }
-
-        AnimalEntity saved = animalRepository.save(existing);
-        logger.info("Animal atualizado com sucesso ID: {}", id);
-        return saved;
+        return animalRepository.save(existing);
     }
 
-    public ResponseEntity<ResponseDTO> deleteById(Long id) {
+    public void deleteById(Long id) {
+        if (!animalRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Animal não encontrado");
+        }
         animalRepository.deleteById(id);
-        logger.info("Animal deletado com sucesso ID: {}", id);
-        ResponseDTO responseDTO = new ResponseDTO(new Date(), "Animal deletado com sucesso", "Animal deletado com sucesso");
-        return new ResponseEntity<>(responseDTO, HttpStatus.NO_CONTENT);
-    }
-
-    public ResponseLoginDTO createAnimals(List<AnimalEntity> animals) {
-        for (AnimalEntity animal : animals) {
-            createNewAnimal(animal);
-        }
-        logger.info("Lote de {} animais cadastrado com sucesso", animals.size());
-        return new ResponseLoginDTO("Os "+ animals.toArray().length +" foram cadastrado com sucesso");
     }
 }

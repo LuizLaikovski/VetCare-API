@@ -13,8 +13,8 @@ import java.util.Date;
 public class VaccinationRecordCreateDTO {
     private Long animalId;
     private Long vaccineId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Long medicId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date applicationDate;
     private Integer numOfDoses;
     private String observation;

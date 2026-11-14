@@ -1,10 +1,12 @@
 package com.vetcare.petmeds.modules.vaccinationRecord.controller;
 
+import com.vetcare.petmeds.modules.vaccinationRecord.dto.RequestEditVaccinationRecord;
 import com.vetcare.petmeds.modules.vaccinationRecord.dto.VaccinationRecordCreateDTO;
 import com.vetcare.petmeds.modules.vaccinationRecord.dto.VaccinationRecordResponseDTO;
 import com.vetcare.petmeds.modules.vaccinationRecord.service.VaccinationRecordService;
 import com.vetcare.petmeds.shared.ResponseDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,9 +80,8 @@ public class VaccinationRecordController {
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        Date startDateFind = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Date endDateFind = Date.from(date.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
-        return ResponseEntity.ok(vaccinationRecordService.findByDateRange(startDateFind, endDateFind, pageable));
+        Date dateFind = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return ResponseEntity.ok(vaccinationRecordService.findByApplicationDate(dateFind, pageable));
     }
 
     @GetMapping("/between-date")
@@ -100,5 +101,10 @@ public class VaccinationRecordController {
             @RequestParam String status
     ) {
         return ResponseEntity.ok(vaccinationRecordService.findByApplicationStatus(status, pageable));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<VaccinationRecordResponseDTO> edit(@Valid @RequestBody RequestEditVaccinationRecord request, @PathVariable Long id) {
+        return new ResponseEntity<>(vaccinationRecordService.editVaccinationRecord(request, id), HttpStatus.OK);
     }
 }

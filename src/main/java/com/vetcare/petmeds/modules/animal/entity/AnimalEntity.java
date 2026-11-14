@@ -57,4 +57,11 @@ public class AnimalEntity {
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<MedicineEntity> medicine = new ArrayList<>();
+
+    public void update(Double weight, Integer age, String race, UserEntity owner) {
+        this.weight = weight;
+        this.age = age;
+        this.race = race;
+        this.owner = owner;
+    }
 }

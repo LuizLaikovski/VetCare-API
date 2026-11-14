@@ -2,6 +2,7 @@ package com.vetcare.petmeds.modules.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
+import com.vetcare.petmeds.modules.images.entity.ImageEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,6 +47,13 @@ public class UserEntity {
     @JsonManagedReference
     @ToString.Exclude
     private List<AnimalEntity> animals =  new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "use_image_id", referencedColumnName = "ima_id")
+    @ToString.Exclude
+    private ImageEntity image;
+
+
 
     public Collection<? extends GrantedAuthority> getAutorities() {
         if (this.typeUser == TypeUser.ADM) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.modules.animal.entity.Sex;
 import com.vetcare.petmeds.modules.animal.entity.Specie;
+import com.vetcare.petmeds.modules.initialCheckUp.dto.InitialCheckUpDTO;
 import com.vetcare.petmeds.modules.initialCheckUp.enumns.*;
 import com.vetcare.petmeds.modules.user.entity.UserEntity;
 import jakarta.persistence.*;
@@ -170,4 +171,52 @@ public class InitialCheckUpEntity {
 
     @Column(name = "inc_otherobservations", columnDefinition = "TEXT")
     private String otherObservations; // Texto livre para anotações adicionais do médico veterinário
+
+    public InitialCheckUpEntity(InitialCheckUpDTO dto) {
+        if (dto.getExaminationDate() != null) {
+            this.examinationDate = dto.getExaminationDate().toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDateTime();
+        }
+
+        this.species = dto.getSpecies();
+        this.sex = dto.getSex();
+
+        if (dto.getAnimalId() != null) {
+            this.animal = new AnimalEntity();
+            this.animal.setId(dto.getAnimalId());
+        }
+
+        if (dto.getVeterinarianId() != null) {
+            this.veterinarian = new UserEntity();
+            this.veterinarian.setId(dto.getVeterinarianId());
+        }
+
+        this.crt = dto.getCrt();
+        this.rr = dto.getRr();
+        this.hr = dto.getHr();
+        this.tpc = dto.getTpc();
+        this.hydration = dto.getHydration();
+        this.arterialPulse = dto.getArterialPulse();
+        this.mucousMembranes = dto.getMucousMembranes();
+        this.consciousnessLevel = dto.getConsciousnessLevel();
+        this.nutritionalStatus = dto.getNutritionalStatus();
+        this.behavior = dto.getBehavior();
+        this.hasEctoparasites = dto.getHasEctoparasites();
+        this.ectoparasitesDetails = dto.getEctoparasitesDetails();
+        this.postureMovement = dto.getPostureMovement();
+        this.eyes = dto.getEyes();
+        this.ears = dto.getEars();
+        this.oralCavity = dto.getOralCavity();
+        this.respiratory = dto.getRespiratory();
+        this.circulatory = dto.getCirculatory();
+        this.hemolymphatic = dto.getHemolymphatic();
+        this.digestive = dto.getDigestive();
+        this.genital = dto.getGenital();
+        this.urinary = dto.getUrinary();
+        this.nervous = dto.getNervous();
+        this.skinAndAppendages = dto.getSkinAndAppendages();
+        this.otherStatus = dto.getOtherStatus();
+        this.otherObservations = dto.getOtherObservations();
+    }
 }

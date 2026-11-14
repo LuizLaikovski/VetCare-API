@@ -40,26 +40,19 @@ public class UserService {
         }
 
         userRepository.save(userEntity);
-        logger.info("Usuário criado com sucesso: {}", user.getEmail());
         return new ResponseLoginDTO("Usuario Criado com sucesso!");
     }
 
     public Page<UserEntity> findAll(Pageable pageable) {
-        Page<UserEntity> page = userRepository.findAll(pageable);
-        logger.info("Listagem de usuários obtida com sucesso");
-        return page;
+        return userRepository.findAll(pageable);
     }
 
     public UserEntity getUserById(Long id) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado!"));
-        logger.info("Usuário buscado com sucesso ID: {}", id);
-        return user;
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado!"));
     }
 
     public UserEntity getUserByEmail(String email) {
-        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Este email não possui cadastro!"));
-        logger.info("Usuário buscado com sucesso por e-mail: {}", email);
-        return user;
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Este email não possui cadastro!"));
     }
 
     public ResponseLoginDTO login(String email, String password) {
@@ -78,7 +71,6 @@ public class UserService {
                 user.getTypeUser()
         );
 
-        logger.info("Login realizado com sucesso para usuário: {}", email);
         return new ResponseLoginDTO("Login realizado com sucesso!", userResponseDTO, generatedToken);
     }
 
@@ -87,7 +79,6 @@ public class UserService {
             token = token.substring(7);
         }
         tokenService.revokeToken(token);
-        logger.info("Logout realizado com sucesso");
     }
 
     public ResponseLoginDTO updateUser(Long id, UserEntity user) {
@@ -110,7 +101,6 @@ public class UserService {
         }
 
         userRepository.save(oldUser);
-        logger.info("Usuário atualizado com sucesso ID: {}", id);
         return new ResponseLoginDTO("O usuario foi atualizado com sucesso!");
     }
 
@@ -119,7 +109,6 @@ public class UserService {
             throw new ResourceNotFoundException("Usuário não encontrado!");
         }
         userRepository.deleteById(id);
-        logger.info("Usuário removido com sucesso ID: {}", id);
         return new ResponseLoginDTO("O usuario foi removido com sucesso!");
     }
 

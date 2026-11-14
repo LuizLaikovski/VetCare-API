@@ -3,15 +3,20 @@ package com.vetcare.petmeds.modules.initialCheckUp.dto;
 import com.vetcare.petmeds.modules.animal.dto.AnimalResponseDTO;
 import com.vetcare.petmeds.modules.animal.entity.Sex;
 import com.vetcare.petmeds.modules.animal.entity.Specie;
+import com.vetcare.petmeds.modules.initialCheckUp.entity.InitialCheckUpEntity;
 import com.vetcare.petmeds.modules.initialCheckUp.enumns.*;
 import com.vetcare.petmeds.modules.user.dto.UserResponseDTO;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class InitialCheckUpResponseDTO {
 
     private Long id;
@@ -49,4 +54,39 @@ public class InitialCheckUpResponseDTO {
     private ExamStatus skinAndAppendages;
     private ExamStatus otherStatus;
     private String otherObservations;
+
+    public InitialCheckUpResponseDTO(InitialCheckUpEntity entity) {
+        this.id = entity.getId();
+        this.examinationDate = entity.getExaminationDate();
+        this.species = entity.getSpecies();
+        this.sex = entity.getSex();
+        this.animal = new AnimalResponseDTO(entity.getAnimal());
+        this.veterinarian = new UserResponseDTO(entity.getVeterinarian());
+        this.crt = entity.getCrt();
+        this.rr = entity.getRr();
+        this.hr = entity.getHr();
+        this.tpc = entity.getTpc();
+        this.hydration = entity.getHydration();
+        this.arterialPulse = entity.getArterialPulse();
+        this.mucousMembranes = entity.getMucousMembranes();
+        this.consciousnessLevel = entity.getConsciousnessLevel();
+        this.nutritionalStatus = entity.getNutritionalStatus();
+        this.behavior = entity.getBehavior();
+        this.hasEctoparasites = entity.getHasEctoparasites();
+        this.ectoparasitesDetails = entity.getEctoparasitesDetails();
+        this.postureMovement = entity.getPostureMovement();
+        this.eyes = entity.getEyes();
+        this.ears = entity.getEars();
+        this.oralCavity = entity.getOralCavity();
+        this.respiratory = entity.getRespiratory();
+        this.circulatory = entity.getCirculatory();
+        this.hemolymphatic = entity.getHemolymphatic();
+        this.digestive = entity.getDigestive();
+        this.genital = entity.getGenital();
+        this.urinary = entity.getUrinary();
+        this.nervous = entity.getNervous();
+        this.skinAndAppendages = entity.getSkinAndAppendages();
+        this.otherStatus = entity.getOtherStatus();
+        this.otherObservations = entity.getOtherObservations();
+    }
 }

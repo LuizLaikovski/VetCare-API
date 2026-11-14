@@ -46,4 +46,10 @@ public class VaccinationRecordEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "var_application_status")
     private ApplicationStatus applicationStatus;
+
+    public void update(Date applicationDate, Integer numOfDoses, String observation) {
+        this.applicationDate = applicationDate;
+        this.numOfDoses = numOfDoses;
+        this.observation = observation;
+    }
 }

@@ -1,8 +1,10 @@
 package com.vetcare.petmeds.modules.medicine.controller;
 
+import com.vetcare.petmeds.modules.medicine.dto.MedicineResponseDTO;
 import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.service.MedicineService;
+import com.vetcare.petmeds.shared.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -25,13 +27,13 @@ public class MedicineController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar medicamento por ID", description = "Busca os detalhes de um medicamento pelo seu ID")
-    public ResponseEntity<MedicineEntity> getMedicineById(@PathVariable Long id) {
+    public ResponseEntity<MedicineResponseDTO> getMedicineById(@PathVariable Long id) {
         return ResponseEntity.ok(medicineService.getMedicineById(id));
     }
 
     @GetMapping("/name/{name}")
     @Operation(summary = "Buscar medicamentos por nome", description = "Busca medicamentos pelo nome com paginação")
-    public ResponseEntity<Page<MedicineEntity>> getMedicineByName(
+    public ResponseEntity<Page<MedicineResponseDTO>> getMedicineByName(
             @PathVariable String name,
             @PageableDefault(page = 0, size = 10) Pageable pageable
     ) {
@@ -40,7 +42,7 @@ public class MedicineController {
 
     @GetMapping("/all")
     @Operation(summary = "Listar todos os medicamentos", description = "Retorna uma lista paginada de medicamentos")
-    public ResponseEntity<Page<MedicineEntity>> getAllMedicine(
+    public ResponseEntity<Page<MedicineResponseDTO>> getAllMedicine(
             @PageableDefault(page = 0, size = 10) Pageable pageable
     ) {
         return ResponseEntity.ok(medicineService.getAllMedicines(pageable));
@@ -48,25 +50,19 @@ public class MedicineController {
 
     @PostMapping("/create")
     @Operation(summary = "Cadastro de Medicamento", description = "Cadastra um novo medicamento")
-    public ResponseEntity<MedicineEntity> createMedicine(@RequestBody MedicineEntity medicine) {
+    public ResponseEntity<MedicineResponseDTO> createMedicine(@RequestBody MedicineEntity medicine) {
         return new ResponseEntity<>(medicineService.createMedicine(medicine), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/createAll")
-    @Operation(summary = "Cadastro de múltiplos medicamentos", description = "Cadastra uma lista de novos medicamentos")
-    public ResponseEntity<ResponseLoginDTO> createAllsMedicine(@RequestBody List<MedicineEntity> medicine) {
-        return new ResponseEntity<>(medicineService.createAllsMedicine(medicine), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar medicamento", description = "Atualiza os dados de um medicamento existente")
-    public ResponseEntity<MedicineEntity> updateMedicine(@PathVariable Long id, @RequestBody MedicineEntity medicine) {
+    public ResponseEntity<MedicineResponseDTO> updateMedicine(@PathVariable Long id, @RequestBody MedicineEntity medicine) {
         return ResponseEntity.ok(medicineService.updateMedicine(id, medicine));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover medicamento", description = "Remove um medicamento do sistema")
-    public ResponseEntity<ResponseLoginDTO> deleteMedicine(@PathVariable Long id) {
-        return ResponseEntity.ok(medicineService.deleteMedicine(id));
+    public ResponseEntity<ResponseDTO> deleteMedicine(@PathVariable Long id) {
+        return new ResponseEntity<>(medicineService.deleteMedicine(id), HttpStatus.NO_CONTENT);
     }
 }

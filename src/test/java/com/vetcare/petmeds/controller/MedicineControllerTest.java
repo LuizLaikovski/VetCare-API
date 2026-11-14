@@ -1,20 +1,23 @@
 package com.vetcare.petmeds.controller;
 
-import com.vetcare.petmeds.modules.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.modules.medicine.controller.MedicineController;
+import com.vetcare.petmeds.modules.medicine.dto.MedicineResponseDTO;
 import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
 import com.vetcare.petmeds.modules.medicine.service.MedicineService;
 import com.vetcare.petmeds.modules.medicine.entity.TypeMedicine;
+import com.vetcare.petmeds.shared.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -37,6 +40,7 @@ public class MedicineControllerTest {
     private ObjectMapper objectMapper;
 
     private MedicineEntity medicine;
+    private MedicineResponseDTO responseDTO;
 
     @BeforeEach
     void setUp() {
@@ -44,11 +48,13 @@ public class MedicineControllerTest {
         medicine.setId(1L);
         medicine.setName("Paracetamol");
         medicine.setType(TypeMedicine.pill);
+
+        responseDTO = new MedicineResponseDTO(medicine);
     }
 
     @Test
     void getMedicineById_ShouldReturnOk() throws Exception {
-        when(medicineService.getMedicineById(1L)).thenReturn(medicine);
+        when(medicineService.getMedicineById(1L)).thenReturn(responseDTO);
 
         mockMvc.perform(get("/medicine/1"))
                 .andExpect(status().isOk())
@@ -57,7 +63,7 @@ public class MedicineControllerTest {
 
     @Test
     void getAllMedicines_ShouldReturnOk() throws Exception {
-        org.springframework.data.domain.Page<MedicineEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(medicine));
+        var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(medicineService.getAllMedicines(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/medicine/all"))
@@ -66,8 +72,8 @@ public class MedicineControllerTest {
     }
 
     @Test
-    void createMedicine_ShouldReturnOk() throws Exception {
-        when(medicineService.createMedicine(any(MedicineEntity.class))).thenReturn(medicine);
+    void createMedicine_ShouldReturnCreated() throws Exception {
+        when(medicineService.createMedicine(any(MedicineEntity.class))).thenReturn(responseDTO);
 
         mockMvc.perform(post("/medicine/create")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +84,7 @@ public class MedicineControllerTest {
 
     @Test
     void updateMedicine_ShouldReturnOk() throws Exception {
-        when(medicineService.updateMedicine(anyLong(), any(MedicineEntity.class))).thenReturn(medicine);
+        when(medicineService.updateMedicine(anyLong(), any(MedicineEntity.class))).thenReturn(responseDTO);
 
         mockMvc.perform(put("/medicine/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -88,11 +94,12 @@ public class MedicineControllerTest {
     }
 
     @Test
-    void deleteMedicine_ShouldReturnOk() throws Exception {
-        when(medicineService.deleteMedicine(1L)).thenReturn(new ResponseLoginDTO("Medicine deleted successfully"));
+    void deleteMedicine_ShouldReturnNoContent() throws Exception {
+        ResponseDTO res = new ResponseDTO(new Date(), "Deletado", "Medicamento deleteado com sucesso");
+        when(medicineService.deleteMedicine(1L)).thenReturn(res);
 
         mockMvc.perform(delete("/medicine/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Medicine deleted successfully"));
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.message").value("Deletado"));
     }
 }

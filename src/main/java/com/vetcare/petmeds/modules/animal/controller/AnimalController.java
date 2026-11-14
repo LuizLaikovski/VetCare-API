@@ -35,18 +35,6 @@ public class AnimalController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/createAll")
-    @Operation(summary = "Cadastro de múltiplos animais", description = "Cadastra uma lista de novos animais")
-    public ResponseEntity<ResponseDTO> createNewAnimals(@RequestBody List<AnimalEntity> animals) {
-        animalService.createAnimals(animals);
-        ResponseDTO response = new ResponseDTO(
-                new Date(),
-                "Animais cadastrados com sucesso",
-                "Animais cadastrados com sucesso"
-        );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
     @PostMapping("/addMedicine")
     @Operation(summary = "Adicionar medicamento a um animal", description = "Associa um medicamento a um animal")
     public ResponseEntity<ResponseDTO> addMedicine(@RequestParam Long idAnimal, @RequestParam Long idMedicine) {
