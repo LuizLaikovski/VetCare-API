@@ -1,6 +1,7 @@
 package com.vetcare.petmeds.exception;
 
 import com.vetcare.petmeds.shared.ErrorDTO;
+import com.vetcare.petmeds.shared.ErrorDetailsDTO;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorDTO> handleUnauthorized(UnauthorizedException ex, WebRequest request) {
+    public ResponseEntity<ErrorDTO> handleUnauthorizedException(UnauthorizedException ex, WebRequest request) {
         ErrorDTO errorDTO = new ErrorDTO(
                 new Date(),
                 ex.getMessage(),
@@ -42,17 +43,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorDTO> handleGeneralException(Exception ex, WebRequest request) {
-        ErrorDTO errorDTO = new ErrorDTO(
+    public final ResponseEntity<ErrorDetailsDTO> handleGeneralException(Exception ex, WebRequest request) {
+        ErrorDetailsDTO errorDTO = new ErrorDetailsDTO(
                 new Date(),
                 "Erro interno do servidor!",
-                request.getDescription(false)
+                request.getDescription(false),
+                ex.getMessage()
         );
         return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public final ResponseEntity<ErrorDTO> handleBadRequest(BadRequestException ex, WebRequest request) {
+    public final ResponseEntity<ErrorDTO> handleBadRequestException(BadRequestException ex, WebRequest request) {
         ErrorDTO errorDTO = new ErrorDTO(
                 new Date(),
                 "Rota não encontrada",
@@ -63,7 +65,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public final ResponseEntity<ErrorDTO> handleTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+    public final ResponseEntity<ErrorDTO> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
         ErrorDTO errorDTO = new ErrorDTO(
                 new Date(),
                 "Parâmetro inválido: " + ex.getName() + " deve ser do tipo " + ex.getRequiredType().getSimpleName(),
@@ -74,7 +76,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final ResponseEntity<ErrorDTO> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<ErrorDTO> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        ErrorDTO errorDTO = new ErrorDTO(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ImageStorageException.class)
+    public final ResponseEntity<ErrorDTO> handleImageStorageException(ImageStorageException ex, WebRequest request) {
+        ErrorDTO errorDTO = new ErrorDTO(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public final ResponseEntity<ErrorDTO> handleFileStorageException(FileStorageException ex, WebRequest request) {
+        ErrorDTO errorDTO = new ErrorDTO(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(errorDTO, HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public final ResponseEntity<ErrorDTO> handleFileNotFoundException(FileNotFoundException ex, WebRequest request) {
         ErrorDTO errorDTO = new ErrorDTO(
                 new Date(),
                 ex.getMessage(),
