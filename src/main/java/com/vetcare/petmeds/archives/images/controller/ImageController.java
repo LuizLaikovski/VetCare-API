@@ -5,6 +5,7 @@ import com.vetcare.petmeds.archives.images.dto.ImageResponseDTO;
 import com.vetcare.petmeds.archives.images.dto.ImageUserResponseDTO;
 import com.vetcare.petmeds.archives.images.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +27,7 @@ public class ImageController {
     }
 
     @PostMapping("/user/{id}")
-    public ImageUserResponseDTO uploadImagetoUser(
+    public ImageUserResponseDTO uploadImageToUser(
             @PathVariable("id") Long id,
             @RequestParam("name") String name,
             @RequestParam("typeContent") String typeContent,
@@ -41,7 +42,7 @@ public class ImageController {
     }
 
     @GetMapping("/file/{id}")
-    public ResponseEntity<byte[]> findByIdToImage(@PathVariable Long id) {
+    public ResponseEntity<Resource> findByIdToImage(@PathVariable Long id) {
         return imageService.findByIdToImage(id);
     }
 

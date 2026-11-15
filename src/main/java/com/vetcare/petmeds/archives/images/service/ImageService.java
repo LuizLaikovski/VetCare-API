@@ -11,10 +11,15 @@ import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
 import com.vetcare.petmeds.applicationPrimary.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class ImageService {
@@ -29,8 +34,8 @@ public class ImageService {
     public ImageResponseDTO uploadImageToDTO(ImageRequestDTO request) {
         try {
             return new ImageResponseDTO(imageRepository.save(new ImageEntity(
-                    request.getName(),
-                    request.getTypeContent(),
+                    request.getData().getOriginalFilename(),
+                    request.getData().getContentType(),
                     request.getData().getBytes()
             )));
         } catch (Exception e) {
@@ -43,8 +48,8 @@ public class ImageService {
             UserEntity user = userService.getUserById(id);
 
             ImageEntity image = imageRepository.save(new ImageEntity(
-                    request.getName(),
-                    request.getTypeContent(),
+                    request.getData().getOriginalFilename(),
+                    request.getData().getContentType(),
                     request.getData().getBytes()
             ));
 
@@ -75,7 +80,7 @@ public class ImageService {
         }
     }
 
-    public ResponseEntity<byte[]> findByIdToImage(Long id) {
+    public ResponseEntity<Resource> findByIdToImage(Long id) {
         try {
             ImageEntity image = findImageByIdToEntity(id);
 
@@ -88,8 +93,13 @@ public class ImageService {
 
             return ResponseEntity.ok()
                     .contentType(mediaType)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.getNome() + "\"")
-                    .body(image.getDados());
+                    .contentLength(image.getDados().length)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            ContentDisposition.attachment()
+                                    .filename(image.getNome())
+                                    .build().toString()
+                            )
+                    .body(new ByteArrayResource(image.getDados()));
 
         } catch (ResourceNotFoundException e) {
             throw e;
