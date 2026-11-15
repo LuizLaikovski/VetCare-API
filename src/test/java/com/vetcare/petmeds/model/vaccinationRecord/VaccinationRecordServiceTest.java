@@ -1,19 +1,19 @@
 package com.vetcare.petmeds.model.vaccinationRecord;
 
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
-import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
-import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
-import com.vetcare.petmeds.modules.user.entity.UserEntity;
-import com.vetcare.petmeds.modules.user.repository.UserRepository;
-import com.vetcare.petmeds.modules.vaccinationRecord.dto.RequestEditVaccinationRecord;
-import com.vetcare.petmeds.modules.vaccinationRecord.dto.VaccinationRecordCreateDTO;
-import com.vetcare.petmeds.modules.vaccinationRecord.dto.VaccinationRecordResponseDTO;
-import com.vetcare.petmeds.modules.vaccinationRecord.entity.ApplicationStatus;
-import com.vetcare.petmeds.modules.vaccinationRecord.entity.VaccinationRecordEntity;
-import com.vetcare.petmeds.modules.vaccinationRecord.repository.VaccinationRecordRepository;
-import com.vetcare.petmeds.modules.vaccinationRecord.service.VaccinationRecordService;
-import com.vetcare.petmeds.modules.vaccine.entity.VaccineEntity;
-import com.vetcare.petmeds.modules.vaccine.repository.VaccineRepository;
+import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
+import com.vetcare.petmeds.applicationPrimary.animal.repository.AnimalRepository;
+import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
+import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
+import com.vetcare.petmeds.applicationPrimary.vaccinationRecord.dto.RequestEditVaccinationRecord;
+import com.vetcare.petmeds.applicationPrimary.vaccinationRecord.dto.VaccinationRecordCreateDTO;
+import com.vetcare.petmeds.applicationPrimary.vaccinationRecord.dto.VaccinationRecordResponseDTO;
+import com.vetcare.petmeds.applicationPrimary.vaccinationRecord.entity.ApplicationStatus;
+import com.vetcare.petmeds.applicationPrimary.vaccinationRecord.entity.VaccinationRecordEntity;
+import com.vetcare.petmeds.applicationPrimary.vaccinationRecord.repository.VaccinationRecordRepository;
+import com.vetcare.petmeds.applicationPrimary.vaccinationRecord.service.VaccinationRecordService;
+import com.vetcare.petmeds.applicationPrimary.vaccine.entity.VaccineEntity;
+import com.vetcare.petmeds.applicationPrimary.vaccine.repository.VaccineRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,14 +24,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,8 +1,8 @@
 package com.vetcare.petmeds.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vetcare.petmeds.modules.token.service.TokenService;
-import com.vetcare.petmeds.modules.user.repository.UserRepository;
+import com.vetcare.petmeds.applicationPrimary.token.service.TokenService;
+import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
 import com.vetcare.petmeds.shared.ErrorDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

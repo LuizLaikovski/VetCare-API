@@ -3,15 +3,16 @@ services:
     image: postgres:15-alpine
     container_name: vetcare-db
     environment:
-      POSTGRES_DB: vetcare
+      POSTGRES_DB: vetcare_app
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d vetcare"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vetcare_app"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,7 +27,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_URL=jdbc:postgresql://database:5432/vetcare
+      - DB_URL=jdbc:postgresql://database:5432/vetcare_app
+      - DB_ARQ_URL=jdbc:postgresql://database:5432/vetcare_arq
       - DB_USER=postgres
       - DB_PASSWORD=password
       - JWT_SECRET=change_me_to_a_very_secure_random_key_123456

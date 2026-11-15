@@ -1,10 +1,10 @@
 package com.vetcare.petmeds.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vetcare.petmeds.modules.history.controller.HistoryController;
-import com.vetcare.petmeds.modules.history.dto.HistoryRequestDTO;
-import com.vetcare.petmeds.modules.history.dto.HistoryResponseDTO;
-import com.vetcare.petmeds.modules.history.service.HistoryService;
+import com.vetcare.petmeds.applicationPrimary.history.controller.HistoryController;
+import com.vetcare.petmeds.applicationPrimary.history.dto.HistoryRequestDTO;
+import com.vetcare.petmeds.applicationPrimary.history.dto.HistoryResponseDTO;
+import com.vetcare.petmeds.applicationPrimary.history.service.HistoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

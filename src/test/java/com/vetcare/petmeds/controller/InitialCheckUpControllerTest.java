@@ -1,10 +1,10 @@
 package com.vetcare.petmeds.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vetcare.petmeds.modules.initialCheckUp.controller.InitialCheckUpController;
-import com.vetcare.petmeds.modules.initialCheckUp.dto.InitialCheckUpDTO;
-import com.vetcare.petmeds.modules.initialCheckUp.dto.InitialCheckUpResponseDTO;
-import com.vetcare.petmeds.modules.initialCheckUp.service.InitialCheckUpService;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.controller.InitialCheckUpController;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.dto.InitialCheckUpDTO;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.dto.InitialCheckUpResponseDTO;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.service.InitialCheckUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

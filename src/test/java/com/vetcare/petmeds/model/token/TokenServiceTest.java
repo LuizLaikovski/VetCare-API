@@ -1,7 +1,7 @@
 package com.vetcare.petmeds.model.token;
 
-import com.vetcare.petmeds.modules.token.service.TokenService;
-import com.vetcare.petmeds.modules.user.entity.UserEntity;
+import com.vetcare.petmeds.applicationPrimary.token.service.TokenService;
+import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

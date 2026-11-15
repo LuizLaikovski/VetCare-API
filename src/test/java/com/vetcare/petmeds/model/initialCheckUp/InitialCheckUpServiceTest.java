@@ -1,15 +1,15 @@
 package com.vetcare.petmeds.model.initialCheckUp;
 
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
-import com.vetcare.petmeds.modules.animal.entity.AnimalEntity;
-import com.vetcare.petmeds.modules.animal.repository.AnimalRepository;
-import com.vetcare.petmeds.modules.initialCheckUp.dto.InitialCheckUpDTO;
-import com.vetcare.petmeds.modules.initialCheckUp.dto.InitialCheckUpResponseDTO;
-import com.vetcare.petmeds.modules.initialCheckUp.entity.InitialCheckUpEntity;
-import com.vetcare.petmeds.modules.initialCheckUp.repository.InitialCheckUpRepository;
-import com.vetcare.petmeds.modules.initialCheckUp.service.InitialCheckUpService;
-import com.vetcare.petmeds.modules.user.entity.UserEntity;
-import com.vetcare.petmeds.modules.user.repository.UserRepository;
+import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
+import com.vetcare.petmeds.applicationPrimary.animal.repository.AnimalRepository;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.dto.InitialCheckUpDTO;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.dto.InitialCheckUpResponseDTO;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.entity.InitialCheckUpEntity;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.repository.InitialCheckUpRepository;
+import com.vetcare.petmeds.applicationPrimary.initialCheckUp.service.InitialCheckUpService;
+import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
+import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

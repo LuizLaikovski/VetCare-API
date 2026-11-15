@@ -1,9 +1,9 @@
 package com.vetcare.petmeds.controller;
 
-import com.vetcare.petmeds.modules.vaccine.controller.VaccineController;
-import com.vetcare.petmeds.modules.vaccine.entity.VaccineEntity;
-import com.vetcare.petmeds.modules.vaccine.service.VaccineService;
-import com.vetcare.petmeds.modules.animal.entity.Specie;
+import com.vetcare.petmeds.applicationPrimary.vaccine.controller.VaccineController;
+import com.vetcare.petmeds.applicationPrimary.vaccine.entity.VaccineEntity;
+import com.vetcare.petmeds.applicationPrimary.vaccine.service.VaccineService;
+import com.vetcare.petmeds.applicationPrimary.animal.entity.Specie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

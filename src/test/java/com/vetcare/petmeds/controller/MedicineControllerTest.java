@@ -1,10 +1,10 @@
 package com.vetcare.petmeds.controller;
 
-import com.vetcare.petmeds.modules.medicine.controller.MedicineController;
-import com.vetcare.petmeds.modules.medicine.dto.MedicineResponseDTO;
-import com.vetcare.petmeds.modules.medicine.entity.MedicineEntity;
-import com.vetcare.petmeds.modules.medicine.service.MedicineService;
-import com.vetcare.petmeds.modules.medicine.entity.TypeMedicine;
+import com.vetcare.petmeds.applicationPrimary.medicine.controller.MedicineController;
+import com.vetcare.petmeds.applicationPrimary.medicine.dto.MedicineResponseDTO;
+import com.vetcare.petmeds.applicationPrimary.medicine.entity.MedicineEntity;
+import com.vetcare.petmeds.applicationPrimary.medicine.service.MedicineService;
+import com.vetcare.petmeds.applicationPrimary.medicine.entity.TypeMedicine;
 import com.vetcare.petmeds.shared.ResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

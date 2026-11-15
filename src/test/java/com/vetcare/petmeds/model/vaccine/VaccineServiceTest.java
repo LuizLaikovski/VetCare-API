@@ -1,10 +1,10 @@
 package com.vetcare.petmeds.model.vaccine;
 
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
-import com.vetcare.petmeds.modules.animal.entity.Specie;
-import com.vetcare.petmeds.modules.vaccine.entity.VaccineEntity;
-import com.vetcare.petmeds.modules.vaccine.repository.VaccineRepository;
-import com.vetcare.petmeds.modules.vaccine.service.VaccineService;
+import com.vetcare.petmeds.applicationPrimary.animal.entity.Specie;
+import com.vetcare.petmeds.applicationPrimary.vaccine.entity.VaccineEntity;
+import com.vetcare.petmeds.applicationPrimary.vaccine.repository.VaccineRepository;
+import com.vetcare.petmeds.applicationPrimary.vaccine.service.VaccineService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
