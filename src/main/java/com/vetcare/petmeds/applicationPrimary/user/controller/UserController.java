@@ -5,16 +5,19 @@ import com.vetcare.petmeds.applicationPrimary.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.applicationPrimary.user.dto.UserDTO;
 import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import com.vetcare.petmeds.applicationPrimary.user.service.UserService;
+import com.vetcare.petmeds.archives.images.dto.ImageUserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -74,4 +77,36 @@ public class UserController {
     public ResponseEntity<ResponseLoginDTO> delete(@PathVariable Long id) {
         return ResponseEntity.ok(userService.deleteUser(id));
     }
+
+    @PostMapping("/image/{id}")
+    @Operation(summary = "Adiciona uma imagem do usuário", description = "Adiciona uma imagem ao usuário do sistema")
+    public ResponseEntity<ImageUserResponseDTO> uploadImageToUser(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile image
+    ) {
+        return new ResponseEntity(userService.uploadImageToUser(id, image), HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/image/{id}")
+    @Operation(summary = "Atualiza a imagem do usuário", description = "Atualiza a imagem do usuário no sistema")
+    public ResponseEntity<ImageUserResponseDTO> updateImageToUser(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile image
+    ) {
+        return ResponseEntity.ok(userService.updateImageToUser(id, image));
+    }
+
+    @DeleteMapping("/image/{id}")
+    @Operation(summary = "Remover imagem do usuário", description = "Remove a imagem do usuário do sistema")
+    public ResponseEntity<Void> deletedImageToUser(@PathVariable Long id) {
+        userService.deletedImageToUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/image/{id}")
+    @Operation(summary = "Busca a imagem do usuário", description = "Busca a imagem do usuário no sistema")
+    public ResponseEntity<Resource> findByIdToImage(@PathVariable Long id) {
+        return userService.getByImage(id);
+    }
+
 }

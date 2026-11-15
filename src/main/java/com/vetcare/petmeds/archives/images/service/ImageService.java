@@ -9,17 +9,13 @@ import com.vetcare.petmeds.archives.images.entity.ImageEntity;
 import com.vetcare.petmeds.archives.images.repository.ImageRepository;
 import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
-import com.vetcare.petmeds.applicationPrimary.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.StandardCharsets;
 
 @Service
 public class ImageService {
@@ -28,37 +24,42 @@ public class ImageService {
     private ImageRepository imageRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private UserService userService;
 
-    public ImageResponseDTO uploadImageToDTO(ImageRequestDTO request) {
+    public ImageResponseDTO uploadImageToDTO(MultipartFile request) {
         try {
             return new ImageResponseDTO(imageRepository.save(new ImageEntity(
-                    request.getData().getOriginalFilename(),
-                    request.getData().getContentType(),
-                    request.getData().getBytes()
+                    request.getOriginalFilename(),
+                    request.getContentType(),
+                    request.getBytes()
             )));
         } catch (Exception e) {
             throw new ImageStorageException("Houve um erro ao tentar realizar o update da imagem");
         }
     }
 
-    public ImageUserResponseDTO uploadImageToUser(Long id, ImageRequestDTO request) {
+    public ImageEntity uploadImageToEntity(MultipartFile request) {
         try {
-            UserEntity user = userService.getUserById(id);
-
-            ImageEntity image = imageRepository.save(new ImageEntity(
-                    request.getData().getOriginalFilename(),
-                    request.getData().getContentType(),
-                    request.getData().getBytes()
+            return imageRepository.save(new ImageEntity(
+                    request.getOriginalFilename(),
+                    request.getContentType(),
+                    request.getBytes()
             ));
-
-            user.setImageId(image.getId());
-            userRepository.save(user);
-
-            return new ImageUserResponseDTO(user, image);
         } catch (Exception e) {
-            throw new ImageStorageException("Houve um erro ao tentar realizar o upload da imagem");
+            throw new ImageStorageException("Houve um erro ao tentar realizar o update da imagem");
+        }
+    }
+
+    public ImageEntity updateImageEntity(Long id, MultipartFile request) {
+        try {
+            ImageEntity image = findImageByIdToEntity(id);
+            image.setNome(request.getOriginalFilename());
+            image.setTipoConteudo(request.getContentType());
+            image.setDados(request.getBytes());
+            return imageRepository.save(image);
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ImageStorageException("Houve um erro ao tentar realizar o update da imagem", e);
         }
     }
 
@@ -107,5 +108,14 @@ public class ImageService {
             throw new ResourceNotFoundException("Imagem não encontrada!");
         }
     }
+
+    public void deletedImage(Long id) {
+        try {
+            imageRepository.delete(findImageByIdToEntity(id));
+        } catch (Exception e) {
+            throw new ImageStorageException("Houve um erro ao deletar a imagem!", e);
+        }
+    }
+
 
 }

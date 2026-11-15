@@ -19,21 +19,9 @@ public class ImageController {
 
     @PostMapping
     public ImageResponseDTO uploadImage(
-            @RequestParam("name") String name,
-            @RequestParam("typeContent") String typeContent,
             @RequestParam("data") MultipartFile data
     ) {
-        return imageService.uploadImageToDTO(new ImageRequestDTO(name, typeContent, data));
-    }
-
-    @PostMapping("/user/{id}")
-    public ImageUserResponseDTO uploadImageToUser(
-            @PathVariable("id") Long id,
-            @RequestParam("name") String name,
-            @RequestParam("typeContent") String typeContent,
-            @RequestParam("data") MultipartFile data
-    ) {
-        return imageService.uploadImageToUser(id, new ImageRequestDTO(name, typeContent, data));
+        return imageService.uploadImageToDTO(data);
     }
 
     @GetMapping("/{id}")
@@ -41,9 +29,16 @@ public class ImageController {
         return imageService.findImageByIdToDTO(id);
     }
 
-    @GetMapping("/file/{id}")
+    @GetMapping("/image/{id}")
     public ResponseEntity<Resource> findByIdToImage(@PathVariable Long id) {
         return imageService.findByIdToImage(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteImageById(@PathVariable("id") Long id) {
+        imageService.deletedImage(id);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

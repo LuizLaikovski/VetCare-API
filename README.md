@@ -62,7 +62,7 @@ O serviço da API estará disponível em `http://localhost:8080` e o PostgreSQL 
 ## 📚 Documentação da API
 
 A API conta com documentação interativa via **Swagger UI**. Após rodar a aplicação, acesse:
-`http://localhost:8080/doc` ou `http://localhost:8080/swagger-ui.html`
+`http://localhost:8080/doc` ou `http://localhost:8080/swagger-ui/index.html`
 
 ## ✅ Como Rodar os Testes
 

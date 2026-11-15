@@ -21,6 +21,11 @@ import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
 import com.vetcare.petmeds.applicationPrimary.user.service.UserService;
 
+import com.vetcare.petmeds.archives.images.dto.ImageUserResponseDTO;
+import com.vetcare.petmeds.archives.images.entity.ImageEntity;
+import com.vetcare.petmeds.archives.images.service.ImageService;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -36,6 +41,9 @@ public class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private ImageService imageService;
 
     @InjectMocks
     private UserService userService;
@@ -155,5 +163,79 @@ public class UserServiceTest {
 
         assertEquals("O usuario foi removido com sucesso!", response.getResponse());
         verify(userRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void uploadImageToUser_ShouldSucceed() {
+        MultipartFile multipartFile = mock(MultipartFile.class);
+        ImageEntity imageEntity = new ImageEntity("test.png", "image/png", new byte[]{1, 2, 3});
+        imageEntity.setId(10L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(imageService.uploadImageToEntity(multipartFile)).thenReturn(imageEntity);
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+
+        ImageUserResponseDTO response = userService.uploadImageToUser(1L, multipartFile);
+
+        assertNotNull(response);
+        assertEquals(10L, user.getImageId());
+        verify(imageService).uploadImageToEntity(multipartFile);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void updateImageToUser_ShouldSucceed() {
+        MultipartFile multipartFile = mock(MultipartFile.class);
+        user.setImageId(5L);
+        ImageEntity updatedImageEntity = new ImageEntity("new.png", "image/png", new byte[]{4, 5, 6});
+        updatedImageEntity.setId(5L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(imageService.updateImageEntity(5L, multipartFile)).thenReturn(updatedImageEntity);
+
+        ImageUserResponseDTO response = userService.updateImageToUser(1L, multipartFile);
+
+        assertNotNull(response);
+        assertEquals(5L, user.getImageId());
+        verify(imageService).updateImageEntity(5L, multipartFile);
+    }
+
+    @Test
+    void updateImageToUser_ShouldThrowExceptionWhenNoImage() {
+        MultipartFile multipartFile = mock(MultipartFile.class);
+        user.setImageId(null);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.updateImageToUser(1L, multipartFile));
+        verify(imageService, never()).updateImageEntity(anyLong(), any());
+    }
+
+    @Test
+    void deletedImageToUser_ShouldSucceed() {
+        user.setImageId(5L);
+        ImageEntity imageEntity = new ImageEntity("test.png", "image/png", new byte[]{1, 2, 3});
+        imageEntity.setId(5L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(imageService.findImageByIdToEntity(5L)).thenReturn(imageEntity);
+        doNothing().when(imageService).deletedImage(5L);
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+
+        userService.deletedImageToUser(1L);
+
+        assertNull(user.getImageId());
+        verify(imageService).deletedImage(5L);
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void deletedImageToUser_ShouldThrowExceptionWhenNoImage() {
+        user.setImageId(null);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.deletedImageToUser(1L));
+        verify(imageService, never()).deletedImage(anyLong());
     }
 }

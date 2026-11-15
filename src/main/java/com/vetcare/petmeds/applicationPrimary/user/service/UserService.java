@@ -1,5 +1,9 @@
 package com.vetcare.petmeds.applicationPrimary.user.service;
 
+import com.vetcare.petmeds.archives.images.dto.ImageUserResponseDTO;
+import com.vetcare.petmeds.archives.images.entity.ImageEntity;
+import com.vetcare.petmeds.archives.images.service.ImageService;
+import com.vetcare.petmeds.exception.ImageStorageException;
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.exception.UnauthorizedException;
 import com.vetcare.petmeds.applicationPrimary.token.service.TokenService;
@@ -12,10 +16,17 @@ import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -24,6 +35,7 @@ public class UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private TokenService tokenService;
+    private ImageService imageService;
 
     public ResponseLoginDTO newUser(UserDTO user) {
         UserEntity userEntity = new UserEntity();
@@ -108,6 +120,86 @@ public class UserService {
         }
         userRepository.deleteById(id);
         return new ResponseLoginDTO("O usuario foi removido com sucesso!");
+    }
+
+    public void deletedImageToUser(Long id) {
+        try {
+            UserEntity user = getUserById(id);
+            if (user.getImageId() == null) {
+                throw new ResourceNotFoundException("Usuário não possui imagem cadastrada!");
+            }
+            ImageEntity image = imageService.findImageByIdToEntity(user.getImageId());
+
+            user.setImageId(null);
+            userRepository.save(user);
+
+            imageService.deletedImage(image.getId());
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ImageStorageException("Houve um erro ao deletar a imagem!", e);
+        }
+    }
+
+    public ImageUserResponseDTO uploadImageToUser(Long id, MultipartFile imageFile) {
+        try {
+            UserEntity user = getUserById(id);
+
+            ImageEntity image = imageService.uploadImageToEntity(imageFile);
+
+            user.setImageId(image.getId());
+            userRepository.save(user);
+
+            return new ImageUserResponseDTO(user, image);
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ImageStorageException("Houve um erro ao fazer upload da imagem!", e);
+        }
+    }
+
+    public ImageUserResponseDTO updateImageToUser(Long id, MultipartFile imageFile) {
+        try {
+            UserEntity user = getUserById(id);
+            if (user.getImageId() == null) {
+                throw new ResourceNotFoundException("Usuário não possui imagem cadastrada!");
+            }
+
+            ImageEntity image = imageService.updateImageEntity(user.getImageId(), imageFile);
+
+            return new ImageUserResponseDTO(user, image);
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ImageStorageException("Houve um erro ao atualizar a imagem!", e);
+        }
+    }
+
+    public ResponseEntity<Resource> getByImage(Long id) {
+        try {
+            UserEntity user = getUserById(id);
+            ImageEntity image = imageService.findImageByIdToEntity(user.getImageId());
+
+            MediaType mediaType;
+            try {
+                mediaType = MediaType.parseMediaType(image.getTipoConteudo());
+            } catch (Exception e) {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .contentLength(image.getDados().length)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            ContentDisposition.attachment()
+                                    .filename(image.getNome())
+                                    .build().toString()
+                    )
+                    .body(new ByteArrayResource(image.getDados()));
+
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Usuario não encontrado", e);
+        }
     }
 
 }
