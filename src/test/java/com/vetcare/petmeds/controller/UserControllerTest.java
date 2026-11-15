@@ -67,7 +67,7 @@ public class UserControllerTest {
 
         UserDTO userDTO = new UserDTO("John Doe", "john@example.com", "password123", TypeUser.CLIENT);
 
-        mockMvc.perform(post("/user/create")
+        mockMvc.perform(post("/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isCreated())

@@ -61,7 +61,7 @@ public class VaccinationRecordControllerTest {
     void create_ShouldReturnCreated() throws Exception {
         when(vaccinationRecordService.createVaccinationRecord(any(VaccinationRecordCreateDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/vaccination-record/create")
+        mockMvc.perform(post("/vaccination-record")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isCreated())

@@ -25,10 +25,10 @@ import java.util.Date;
 @RestController
 @RequestMapping("/vaccination-record")
 @Tag(name = "Aplicação de Vacina", description = "Nessa rota gerenciamos as aplicações de vacinas")
-public class VaccinationRecordController {
+public class VaccinationRecordController implements VaccinationRecordControllerInterface {
     private VaccinationRecordService vaccinationRecordService;
 
-    @PostMapping("/create")
+    @Override
     public ResponseEntity<ResponseDTO> create(@RequestBody VaccinationRecordCreateDTO newVaccinationRecord) {
         vaccinationRecordService.createVaccinationRecord(newVaccinationRecord);
         ResponseDTO response = new ResponseDTO(
@@ -39,19 +39,19 @@ public class VaccinationRecordController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/id/{id}")
+    @Override
     public ResponseEntity<VaccinationRecordResponseDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(vaccinationRecordService.findById(id));
     }
 
-    @GetMapping("/all")
+    @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getAllVaccinationRecord(
             @PageableDefault(page = 0, size = 10) Pageable pageable
     ) {
         return ResponseEntity.ok(vaccinationRecordService.findAll(pageable));
     }
 
-    @GetMapping("/animal/{idAnimal}")
+    @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByIdAnimal(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @PathVariable Long idAnimal
@@ -59,7 +59,7 @@ public class VaccinationRecordController {
         return ResponseEntity.ok(vaccinationRecordService.findByAnimalId(idAnimal, pageable));
     }
 
-    @GetMapping("/medic/{medic}")
+    @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByIdMedic(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @PathVariable Long medic
@@ -67,7 +67,7 @@ public class VaccinationRecordController {
         return ResponseEntity.ok(vaccinationRecordService.findByMedicId(medic, pageable));
     }
 
-    @GetMapping("/vaccine/{vaccine}")
+    @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByIdVaccine(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @PathVariable Long vaccine
@@ -75,7 +75,7 @@ public class VaccinationRecordController {
         return ResponseEntity.ok(vaccinationRecordService.findByVaccineId(vaccine, pageable));
     }
 
-    @GetMapping("/date")
+    @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByDate(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
@@ -84,7 +84,7 @@ public class VaccinationRecordController {
         return ResponseEntity.ok(vaccinationRecordService.findByApplicationDate(dateFind, pageable));
     }
 
-    @GetMapping("/between-date")
+    @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByBetweenDate(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -95,7 +95,7 @@ public class VaccinationRecordController {
         return ResponseEntity.ok(vaccinationRecordService.findByDateRange(startDateFind, endDateFind, pageable));
     }
 
-    @GetMapping("/status")
+    @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByStatus(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam String status
@@ -103,7 +103,7 @@ public class VaccinationRecordController {
         return ResponseEntity.ok(vaccinationRecordService.findByApplicationStatus(status, pageable));
     }
 
-    @PutMapping("/{id}")
+    @Override
     public ResponseEntity<VaccinationRecordResponseDTO> edit(@Valid @RequestBody RequestEditVaccinationRecord request, @PathVariable Long id) {
         return new ResponseEntity<>(vaccinationRecordService.editVaccinationRecord(request, id), HttpStatus.OK);
     }

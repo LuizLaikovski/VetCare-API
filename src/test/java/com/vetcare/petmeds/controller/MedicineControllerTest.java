@@ -75,7 +75,7 @@ public class MedicineControllerTest {
     void createMedicine_ShouldReturnCreated() throws Exception {
         when(medicineService.createMedicine(any(MedicineEntity.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/medicine/create")
+        mockMvc.perform(post("/medicine")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(medicine)))
                 .andExpect(status().isCreated())

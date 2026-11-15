@@ -41,7 +41,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         org.springframework.util.AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
         String[] routesNoProtected = {
                 "/user/login",
-                "/user/create",
+                "/user",
                 "/user/logout",
                 "/swagger-ui/**",
                 "/swagger-ui.html",

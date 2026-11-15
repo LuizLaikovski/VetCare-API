@@ -53,7 +53,7 @@ public class AnimalControllerTest {
     void createAnimal_ShouldReturnCreated() throws Exception {
         when(animalService.createNewAnimal(any(AnimalEntity.class))).thenReturn(animal);
 
-        mockMvc.perform(post("/animal/create")
+        mockMvc.perform(post("/animal")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(animal)))
                 .andExpect(status().isCreated())

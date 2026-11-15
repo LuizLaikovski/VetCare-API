@@ -55,7 +55,7 @@ public class HistoryControllerTest {
     void createHistory_ShouldReturnCreated() throws Exception {
         when(historyService.create(any(HistoryRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/history/create")
+        mockMvc.perform(post("/history")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isCreated())

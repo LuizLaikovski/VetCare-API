@@ -19,7 +19,7 @@ public class SecurityConfig {
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     String[] routesNoProtected = {
             "/user/login",
-            "/user/create",
+            "/user",
             "/user/logout",
             "/swagger-ui/**",
             "/swagger-ui.html",

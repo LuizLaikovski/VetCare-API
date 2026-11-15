@@ -81,7 +81,7 @@ public class VaccineControllerTest {
     void createVaccine_ShouldReturnCreated() throws Exception {
         when(vaccineService.createVaccine(any(VaccineEntity.class))).thenReturn(vaccine);
 
-        mockMvc.perform(post("/vaccine/create")
+        mockMvc.perform(post("/vaccine")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(vaccine)))
                 .andExpect(status().isCreated())

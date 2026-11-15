@@ -3,12 +3,10 @@ package com.vetcare.petmeds.applicationPrimary.animal.controller;
 import com.vetcare.petmeds.shared.ResponseDTO;
 import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.applicationPrimary.animal.service.AnimalService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +17,10 @@ import java.util.Date;
 @RequestMapping("/animal")
 @AllArgsConstructor
 @Tag(name = "Animal", description = "Gerenciamento de rotas para os animais")
-public class AnimalController {
+public class AnimalController implements AnimalControllerInterface {
     private AnimalService animalService;
 
-    @PostMapping("/create")
-    @Operation(summary = "Cadastro de Animal", description = "Essa rota é responsável por realizar o cadastro de um novo animal no sistema")
+    @Override
     public ResponseEntity<ResponseDTO> createAnimal(@RequestBody AnimalEntity animal) {
         animalService.createNewAnimal(animal);
         ResponseDTO response = new ResponseDTO(
@@ -34,37 +31,27 @@ public class AnimalController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/addMedicine")
-    @Operation(summary = "Adicionar medicamento a um animal", description = "Associa um medicamento a um animal")
+    @Override
     public ResponseEntity<ResponseDTO> addMedicine(@RequestParam Long idAnimal, @RequestParam Long idMedicine) {
         return ResponseEntity.ok(animalService.setMedicine(idAnimal, idMedicine));
     }
 
-    @GetMapping("/id/{id}")
-    @Operation(summary = "Buscar animal por ID", description = "Busca os detalhes de um animal pelo seu ID")
+    @Override
     public ResponseEntity<AnimalEntity> getById(@PathVariable Long id) {
         return ResponseEntity.ok(animalService.getById(id));
     }
 
-    @GetMapping("/all")
-    @Operation(summary = "Listar todos os animais", description = "Retorna uma lista paginada de animais")
-    public ResponseEntity<Page<AnimalEntity>> getAllAnimals(
-            @PageableDefault(page = 0, size = 10) Pageable pageable
-    ) {
+    @Override
+    public ResponseEntity<Page<AnimalEntity>> getAllAnimals(Pageable pageable) {
         return ResponseEntity.ok(animalService.getAll(pageable));
     }
 
-    @GetMapping("/name/{name}")
-    @Operation(summary = "Buscar animal por nome", description = "Busca animais pelo nome com paginação")
-    public ResponseEntity<Page<AnimalEntity>> getByName(
-            @PathVariable String name,
-            @PageableDefault(page = 0, size = 10) Pageable pageable
-    ) {
+    @Override
+    public ResponseEntity<Page<AnimalEntity>> getByName(@PathVariable String name, Pageable pageable) {
         return ResponseEntity.ok(animalService.getByName(name, pageable));
     }
 
-    @PutMapping("/edit/{id}")
-    @Operation(summary = "Atualizar animal", description = "Atualiza os dados de um animal existente")
+    @Override
     public ResponseEntity<ResponseDTO> updateAnimal(@PathVariable Long id, @RequestBody AnimalEntity animal) {
         animalService.updateAnimal(id, animal);
         ResponseDTO response = new ResponseDTO(
@@ -75,8 +62,7 @@ public class AnimalController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Remover animal", description = "Remove um animal do sistema")
+    @Override
     public ResponseEntity<Void> deleteAnimal(@PathVariable Long id) {
         animalService.deleteById(id);
         return ResponseEntity.noContent().build();

@@ -57,7 +57,7 @@ public class InitialCheckUpControllerTest {
     void createCheckUp_ShouldReturnCreated() throws Exception {
         when(initialCheckUpService.create(any(InitialCheckUpDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/initialCheckUp/create")
+        mockMvc.perform(post("/initialCheckUp")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(checkUpDTO)))

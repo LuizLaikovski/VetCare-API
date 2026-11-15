@@ -16,18 +16,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/vaccine")
 @AllArgsConstructor
 @Tag(name = "Vacina", description = "Gerenciamento de rotas para as vacinas")
-public class VaccineController {
+public class VaccineController implements VaccineControllerInterface {
 
     private VaccineService vaccineService;
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar vacina por ID", description = "Busca os detalhes de uma vacina pelo seu ID")
+    @Override
     public ResponseEntity<VaccineEntity> getVaccineById(@PathVariable Long id) {
         return ResponseEntity.ok(vaccineService.getById(id));
     }
 
-    @GetMapping("/name/{name}")
-    @Operation(summary = "Buscar vacinas por nome", description = "Busca vacinas pelo nome com paginação")
+    @Override
     public ResponseEntity<Page<VaccineEntity>> getVaccineByName(
             @PathVariable String name,
             @PageableDefault(page = 0, size = 10) Pageable pageable
@@ -35,29 +33,25 @@ public class VaccineController {
         return ResponseEntity.ok(vaccineService.getByName(name, pageable));
     }
 
-    @GetMapping("/all")
-    @Operation(summary = "Listar todas as vacinas", description = "Retorna uma lista paginada de vacinas")
+    @Override
     public ResponseEntity<Page<VaccineEntity>> getAllVaccines(
             @PageableDefault(page = 0, size = 10) Pageable pageable
     ) {
         return ResponseEntity.ok(vaccineService.getAll(pageable));
     }
 
-    @PostMapping("/create")
-    @Operation(summary = "Cadastro de Vacina", description = "Cadastra uma nova vacina")
+    @Override
     public ResponseEntity<VaccineEntity> createVaccine(@RequestBody VaccineEntity vaccine) {
         return new ResponseEntity<>(vaccineService.createVaccine(vaccine), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Atualizar vacina", description = "Atualiza os dados de uma vacina existente")
+    @Override
     public ResponseEntity<VaccineEntity> updateVaccine(@PathVariable Long id, @RequestBody VaccineEntity vaccine) {
         vaccine.setId(id);
         return ResponseEntity.ok(vaccineService.updateVaccine(vaccine));
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Remover vacina", description = "Remove uma vacina do sistema")
+    @Override
     public ResponseEntity<Void> deleteVaccine(@PathVariable Long id) {
         vaccineService.delete(id);
         return ResponseEntity.noContent().build();
