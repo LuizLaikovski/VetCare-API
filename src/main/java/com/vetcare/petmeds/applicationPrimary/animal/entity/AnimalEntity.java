@@ -58,6 +58,9 @@ public class AnimalEntity {
     @JsonManagedReference
     private List<MedicineEntity> medicine = new ArrayList<>();
 
+    @Column(name = "ani_image_id")
+    private Long imageId;
+
     public void update(Double weight, Integer age, String race, UserEntity owner) {
         this.weight = weight;
         this.age = age;

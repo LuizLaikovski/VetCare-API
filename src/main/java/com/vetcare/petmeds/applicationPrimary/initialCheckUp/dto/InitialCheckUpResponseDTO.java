@@ -5,7 +5,7 @@ import com.vetcare.petmeds.applicationPrimary.animal.entity.Sex;
 import com.vetcare.petmeds.applicationPrimary.animal.entity.Specie;
 import com.vetcare.petmeds.applicationPrimary.initialCheckUp.entity.InitialCheckUpEntity;
 import com.vetcare.petmeds.applicationPrimary.initialCheckUp.enumns.*;
-import com.vetcare.petmeds.applicationPrimary.user.dto.UserResponseDTO;
+import com.vetcare.petmeds.applicationPrimary.user.dto.UserProfileDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +26,7 @@ public class InitialCheckUpResponseDTO {
     
     // DTOs simplificados para exibição
     private AnimalResponseDTO animal;
-    private UserResponseDTO veterinarian;
+    private UserProfileDTO veterinarian;
     
     private String crt;
     private String rr;
@@ -61,7 +61,7 @@ public class InitialCheckUpResponseDTO {
         this.species = entity.getSpecies();
         this.sex = entity.getSex();
         this.animal = new AnimalResponseDTO(entity.getAnimal());
-        this.veterinarian = new UserResponseDTO(entity.getVeterinarian());
+        this.veterinarian = new UserProfileDTO(entity.getVeterinarian());
         this.crt = entity.getCrt();
         this.rr = entity.getRr();
         this.hr = entity.getHr();

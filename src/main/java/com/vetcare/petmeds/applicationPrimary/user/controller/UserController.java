@@ -3,6 +3,7 @@ package com.vetcare.petmeds.applicationPrimary.user.controller;
 import com.vetcare.petmeds.applicationPrimary.user.dto.LoginRequestDTO;
 import com.vetcare.petmeds.applicationPrimary.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.applicationPrimary.user.dto.UserDTO;
+import com.vetcare.petmeds.applicationPrimary.user.dto.UserProfileDTO;
 import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import com.vetcare.petmeds.applicationPrimary.user.service.UserService;
 import com.vetcare.petmeds.archives.images.dto.ImageUserResponseDTO;
@@ -40,8 +41,8 @@ public class UserController implements UserControllerInterface {
     }
 
     @Override
-    public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public ResponseEntity<UserProfileDTO> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserByIdToDTO(id));
     }
 
     @Override

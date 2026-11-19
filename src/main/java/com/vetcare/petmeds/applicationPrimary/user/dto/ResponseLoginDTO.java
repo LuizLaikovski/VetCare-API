@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class ResponseLoginDTO {
     private String response;
-    private UserResponseDTO user;
+    private UserProfileDTO user;
     private String token;
 
-    public ResponseLoginDTO(UserResponseDTO user) {
+    public ResponseLoginDTO(UserProfileDTO user) {
         this.user = user;
     }
 

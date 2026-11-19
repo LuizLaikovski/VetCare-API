@@ -9,7 +9,7 @@ import com.vetcare.petmeds.exception.UnauthorizedException;
 import com.vetcare.petmeds.applicationPrimary.token.service.TokenService;
 import com.vetcare.petmeds.applicationPrimary.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.applicationPrimary.user.dto.UserDTO;
-import com.vetcare.petmeds.applicationPrimary.user.dto.UserResponseDTO;
+import com.vetcare.petmeds.applicationPrimary.user.dto.UserProfileDTO;
 import com.vetcare.petmeds.applicationPrimary.user.entity.TypeUser;
 import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import com.vetcare.petmeds.applicationPrimary.user.repository.UserRepository;
@@ -61,6 +61,13 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado!"));
     }
 
+    public UserProfileDTO getUserByIdToDTO(Long id) {
+        return new UserProfileDTO(
+                getUserById(id),
+                imageService
+        );
+    }
+
     public UserEntity getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Este email não possui cadastro!"));
     }
@@ -74,14 +81,9 @@ public class UserService {
 
         String generatedToken = tokenService.generateAndStoreToken(user);
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getTypeUser()
-        );
+        UserProfileDTO userProfileDTO = new UserProfileDTO(user, imageService);
 
-        return new ResponseLoginDTO("Login realizado com sucesso!", userResponseDTO, generatedToken);
+        return new ResponseLoginDTO("Login realizado com sucesso!", userProfileDTO, generatedToken);
     }
 
     public void logout(String token) {

@@ -3,6 +3,7 @@ package com.vetcare.petmeds.applicationPrimary.user.controller;
 import com.vetcare.petmeds.applicationPrimary.user.dto.LoginRequestDTO;
 import com.vetcare.petmeds.applicationPrimary.user.dto.ResponseLoginDTO;
 import com.vetcare.petmeds.applicationPrimary.user.dto.UserDTO;
+import com.vetcare.petmeds.applicationPrimary.user.dto.UserProfileDTO;
 import com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity;
 import com.vetcare.petmeds.archives.images.dto.ImageUserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public interface UserControllerInterface {
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar usuário por ID", description = "Busca os detalhes de um usuário pelo seu ID")
-    ResponseEntity<UserEntity> getUserById(@PathVariable Long id);
+    ResponseEntity<UserProfileDTO> getUserById(@PathVariable Long id);
 
     @GetMapping("/email/{email}")
     @Operation(summary = "Buscar usuário por e-mail", description = "Busca um usuário pelo seu e-mail")
