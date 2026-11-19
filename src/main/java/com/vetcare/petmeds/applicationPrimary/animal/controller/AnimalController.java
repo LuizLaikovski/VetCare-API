@@ -7,6 +7,7 @@ import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.applicationPrimary.animal.service.AnimalService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,11 @@ public class AnimalController implements AnimalControllerInterface {
     }
 
     @Override
+    public ResponseEntity<Resource> getimage(Long id) {
+        return animalService.getImage(id);
+    }
+
+    @Override
     public ResponseEntity<Page<AnimalEntity>> getByName(@PathVariable String name, Pageable pageable) {
         return ResponseEntity.ok(animalService.getByName(name, pageable));
     }
@@ -71,8 +77,18 @@ public class AnimalController implements AnimalControllerInterface {
     }
 
     @Override
+    public ResponseEntity<Resource> updateImageAnimal(Long id, MultipartFile image) {
+        return animalService.updateImage(id, image);
+    }
+
+    @Override
     public ResponseEntity<Void> deleteAnimal(@PathVariable Long id) {
         animalService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteImageAnimal(Long id) {
+        return animalService.deleteImageAnimal(id);
     }
 }

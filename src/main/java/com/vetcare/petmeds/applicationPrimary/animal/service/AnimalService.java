@@ -4,6 +4,7 @@ import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalDescriptionDTO;
 import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalSimpleDescriptionDTO;
 import com.vetcare.petmeds.archives.images.entity.ImageEntity;
 import com.vetcare.petmeds.archives.images.service.ImageService;
+import com.vetcare.petmeds.exception.ImageStorageException;
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.applicationPrimary.animal.repository.AnimalRepository;
@@ -12,8 +13,14 @@ import com.vetcare.petmeds.shared.ResponseDTO;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,7 +72,35 @@ public class AnimalService {
 
             return new AnimalSimpleDescriptionDTO(animalExist, imageService);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ImageStorageException("Houve um erro ao adicionar a imagem ao animal!", e);
+        }
+    }
+
+    public ResponseEntity<Resource> getImage(Long idAnimal) {
+        try {
+            AnimalEntity animal =  getById(idAnimal);
+            ImageEntity image = imageService.findImageByIdToEntity(animal.getImageId());
+
+            MediaType mediaType;
+
+            try {
+                mediaType = MediaType.parseMediaType(image.getTipoConteudo());
+            } catch (Exception e) {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .contentLength(image.getDados().length)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            ContentDisposition.attachment()
+                                    .filename(image.getNome())
+                                    .build().toString()
+                    )
+                    .body(new ByteArrayResource(image.getDados()));
+
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Imagem não encontrada!", e);
         }
     }
 
@@ -86,10 +121,60 @@ public class AnimalService {
         return animalRepository.save(existing);
     }
 
+    public ResponseEntity<Resource> updateImage(Long idAnimal, MultipartFile imageFile) {
+        try {
+            AnimalEntity animalExist = getById(idAnimal);
+            if (animalExist.getImageId() == null) {
+                throw new ResourceNotFoundException("o Animal informado não possui imagem cadastrada!");
+            }
+
+            ImageEntity image = imageService.updateImageEntity(animalExist.getImageId(), imageFile);
+
+            MediaType mediaType;
+
+            try {
+                mediaType = MediaType.parseMediaType(image.getTipoConteudo());
+            } catch (Exception e) {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .contentLength(image.getDados().length)
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            ContentDisposition.attachment()
+                                    .filename(image.getNome())
+                                    .build().toString()
+                    )
+                    .body(new ByteArrayResource(image.getDados()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void deleteById(Long id) {
         if (!animalRepository.existsById(id)) {
             throw new ResourceNotFoundException("Animal não encontrado");
         }
         animalRepository.deleteById(id);
     }
+
+    public ResponseEntity<Void> deleteImageAnimal(Long idAnimal) {
+        try {
+            AnimalEntity animal =  getById(idAnimal);
+            if (animal.getImageId() == null) {
+                throw new ResourceNotFoundException("O Animal informado não possui imagem cadastrada!!");
+            }
+            ImageEntity image = imageService.findImageByIdToEntity(animal.getImageId());
+
+            animal.setImageId(null);
+            animalRepository.save(animal);
+
+            imageService.deletedImage(image.getId());
+        } catch (Exception e) {
+            throw new ImageStorageException("Houve um erro ao deletar a imagem!", e);
+        }
+        return null;
+    }
+
 }

@@ -5,6 +5,7 @@ import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalSimpleDescription
 import com.vetcare.petmeds.shared.ResponseDTO;
 import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -39,6 +40,10 @@ public interface AnimalControllerInterface {
             @PageableDefault(page = 0, size = 10) Pageable pageable
     );
 
+    @GetMapping("/image/{id}")
+    @Operation(summary = "Recupera a imagem", description = "Recupera apenas o arquivo de imagem do animal")
+    ResponseEntity<Resource> getimage(@PathVariable Long id);
+
     @GetMapping("/name/{name}")
     @Operation(summary = "Buscar animal por nome", description = "Busca animais pelo nome com paginação")
     ResponseEntity<Page<AnimalEntity>> getByName(
@@ -46,11 +51,19 @@ public interface AnimalControllerInterface {
             @PageableDefault(page = 0, size = 10) Pageable pageable
     );
 
-    @PutMapping("/edit/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar animal", description = "Atualiza os dados de um animal existente")
     ResponseEntity<ResponseDTO> updateAnimal(@PathVariable Long id, @RequestBody AnimalEntity animal);
+
+    @PatchMapping("/image/{id}")
+    @Operation(summary = "Atualizar a imagem do animal", description = "Atualiza a imagem do animal caso ele exista no sistema")
+    ResponseEntity<Resource> updateImageAnimal(@PathVariable Long id, @RequestParam("image") MultipartFile image);
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Remover animal", description = "Remove um animal do sistema")
     ResponseEntity<Void> deleteAnimal(@PathVariable Long id);
+
+    @DeleteMapping("/image/{id}")
+    @Operation(summary = "Remover a imagem do Animal", description = "Remover a imagem do Animal")
+    ResponseEntity<Void> deleteImageAnimal(@PathVariable Long id);
 }
