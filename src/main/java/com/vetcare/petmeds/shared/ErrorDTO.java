@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class ErrorDTO {
-    @JsonFormat(shape =  JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date timestamp;
     private String message;
     private String description;
