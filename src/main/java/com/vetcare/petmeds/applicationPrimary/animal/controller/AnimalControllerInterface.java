@@ -1,5 +1,7 @@
 package com.vetcare.petmeds.applicationPrimary.animal.controller;
 
+import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalDescriptionDTO;
+import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalSimpleDescriptionDTO;
 import com.vetcare.petmeds.shared.ResponseDTO;
 import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface AnimalControllerInterface {
 
@@ -19,13 +22,20 @@ public interface AnimalControllerInterface {
     @Operation(summary = "Adicionar medicamento a um animal", description = "Associa um medicamento a um animal")
     ResponseEntity<ResponseDTO> addMedicine(@RequestParam Long idAnimal, @RequestParam Long idMedicine);
 
+    @PostMapping("/image/{id}")
+    @Operation(summary = "Insere uma imagem ao cadastro do animal", description = "Insere uma imagem a um animal")
+    ResponseEntity<AnimalSimpleDescriptionDTO> setImage(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile image
+    );
+
     @GetMapping("/id/{id}")
     @Operation(summary = "Buscar animal por ID", description = "Busca os detalhes de um animal pelo seu ID")
     ResponseEntity<AnimalEntity> getById(@PathVariable Long id);
 
     @GetMapping("/all")
     @Operation(summary = "Listar todos os animais", description = "Retorna uma lista paginada de animais")
-    ResponseEntity<Page<AnimalEntity>> getAllAnimals(
+    ResponseEntity<Page<AnimalDescriptionDTO>> getAllAnimals(
             @PageableDefault(page = 0, size = 10) Pageable pageable
     );
 

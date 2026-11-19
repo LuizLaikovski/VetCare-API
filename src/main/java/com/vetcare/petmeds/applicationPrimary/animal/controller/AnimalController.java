@@ -1,5 +1,7 @@
 package com.vetcare.petmeds.applicationPrimary.animal.controller;
 
+import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalDescriptionDTO;
+import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalSimpleDescriptionDTO;
 import com.vetcare.petmeds.shared.ResponseDTO;
 import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.applicationPrimary.animal.service.AnimalService;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -37,12 +40,17 @@ public class AnimalController implements AnimalControllerInterface {
     }
 
     @Override
+    public ResponseEntity<AnimalSimpleDescriptionDTO> setImage(Long id, MultipartFile image) {
+        return ResponseEntity.ok(animalService.setImage(id, image));
+    }
+
+    @Override
     public ResponseEntity<AnimalEntity> getById(@PathVariable Long id) {
         return ResponseEntity.ok(animalService.getById(id));
     }
 
     @Override
-    public ResponseEntity<Page<AnimalEntity>> getAllAnimals(Pageable pageable) {
+    public ResponseEntity<Page<AnimalDescriptionDTO>> getAllAnimals(Pageable pageable) {
         return ResponseEntity.ok(animalService.getAll(pageable));
     }
 

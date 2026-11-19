@@ -1,5 +1,9 @@
 package com.vetcare.petmeds.applicationPrimary.animal.service;
 
+import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalDescriptionDTO;
+import com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalSimpleDescriptionDTO;
+import com.vetcare.petmeds.archives.images.entity.ImageEntity;
+import com.vetcare.petmeds.archives.images.service.ImageService;
 import com.vetcare.petmeds.exception.ResourceNotFoundException;
 import com.vetcare.petmeds.applicationPrimary.animal.entity.AnimalEntity;
 import com.vetcare.petmeds.applicationPrimary.animal.repository.AnimalRepository;
@@ -11,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -20,9 +25,10 @@ public class AnimalService {
     private static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
     private AnimalRepository animalRepository;
     private MedicineService medicineService;
+    private ImageService imageService;
 
-    public Page<AnimalEntity> getAll(Pageable pageable) {
-        return animalRepository.findAll(pageable);
+    public Page<AnimalDescriptionDTO> getAll(Pageable pageable) {
+        return animalRepository.findAll(pageable).map(AnimalDescriptionDTO::new);
     }
 
     public AnimalEntity getById(Long id) {
@@ -46,6 +52,21 @@ public class AnimalService {
                 "Medicamento salvo com sucesso",
                 "Medicamento salvo com sucesso"
         );
+    }
+
+    public AnimalSimpleDescriptionDTO setImage(Long idAnimal, MultipartFile imageFile) {
+        try {
+            AnimalEntity animalExist = getById(idAnimal);
+
+            ImageEntity  imageEntity = imageService.uploadImageToEntity(imageFile);
+
+            animalExist.setImageId(imageEntity.getId());
+            animalRepository.save(animalExist);
+
+            return new AnimalSimpleDescriptionDTO(animalExist, imageService);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public AnimalEntity createNewAnimal(AnimalEntity animal) {
