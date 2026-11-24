@@ -30,7 +30,7 @@ public interface VaccinationRecordControllerInterface {
     )
     ResponseEntity<VaccinationRecordResponseDTO> findById(@PathVariable Long id);
 
-    @GetMapping("/all")
+    @GetMapping
     @Operation(
             summary = "Listar todos os registros de vacinas",
             description = "Retorna uma lista paginada de todos os registros de vacina cadastrados"
