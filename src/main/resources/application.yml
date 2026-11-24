@@ -1,0 +1,73 @@
+api:
+  security:
+    token:
+      secret: change_me_to_a_very_secure_random_key_123456
+
+file:
+  upload-dir: src/main/java/com/vetcare/petmeds/files
+
+logging:
+  level:
+    com.vetcare.petmeds: INFO
+    org.springframework.security: INFO
+
+spring:
+  application:
+    name: petmeds-api
+
+  cache:
+    redis:
+      time-to-live: 7200000
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+  datasource:
+    arq:
+      driver-class-name: org.postgresql.Driver
+      password: password
+      url: jdbc:postgresql://localhost:5432/vetcare_arq
+      username: postgres
+    primary:
+      driver-class-name: org.postgresql.Driver
+      password: password
+      url: jdbc:postgresql://localhost:5432/vetcare_app
+      username: postgres
+
+  flyway:
+    baseline-on-migrate: true
+    ignore-migration-checksums: true
+    validate-on-migrate: false
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  security:
+    user:
+      name: admin
+      password: "123456"
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+
+  web:
+    resources:
+      add-mappings: false
+
+springdoc:
+  swagger-ui:
+    path: /doc
