@@ -73,12 +73,8 @@ public class ImageService {
     }
 
     public ImageEntity findImageByIdToEntity(Long id) {
-        try {
             return imageRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Imagem não encontrada!"));
-        } catch (Exception e) {
-            throw new ResourceNotFoundException("Imagem não encontrada!");
-        }
     }
 
     public ResponseEntity<Resource> findByIdToImage(Long id) {

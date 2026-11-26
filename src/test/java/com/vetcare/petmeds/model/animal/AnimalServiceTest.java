@@ -50,6 +50,10 @@ public class AnimalServiceTest {
         animal.setRace("Golden Retriever");
         animal.setAge(5);
         animal.setWeight(30.0);
+        animal.setGender(com.vetcare.petmeds.applicationPrimary.animal.entity.Sex.MAS);
+        var owner = new com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity();
+        owner.setName("Maria");
+        animal.setOwner(owner);
     }
 
     @Test
@@ -58,7 +62,7 @@ public class AnimalServiceTest {
         Page<AnimalEntity> page = new PageImpl<>(animals);
         when(animalRepository.findAll(any(Pageable.class))).thenReturn(page);
 
-        Page<AnimalEntity> result = animalService.getAll(Pageable.unpaged());
+        Page<com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalDescriptionDTO> result = animalService.getAll(Pageable.unpaged());
 
         assertEquals(1, result.getContent().size());
         assertEquals("Rex", result.getContent().get(0).getName());

@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,7 +24,7 @@ import java.util.Date;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/vaccination-record")
+@RequestMapping("/vaccination-records")
 @Tag(name = "Aplicação de Vacina", description = "Nessa rota gerenciamos as aplicações de vacinas")
 public class VaccinationRecordController implements VaccinationRecordControllerInterface {
     private VaccinationRecordService vaccinationRecordService;
@@ -46,61 +47,34 @@ public class VaccinationRecordController implements VaccinationRecordControllerI
 
     @Override
     public ResponseEntity<Page<VaccinationRecordResponseDTO>> getAllVaccinationRecord(
-            @PageableDefault(page = 0, size = 10) Pageable pageable
+            Long animalId, Long medicId, Long vaccineId, String status,
+            LocalDate date, LocalDate startDate, LocalDate endDate, Pageable pageable
     ) {
+        if (animalId != null) {
+            return ResponseEntity.ok(vaccinationRecordService.findByAnimalId(animalId, pageable));
+        }
+        if (medicId != null) {
+            return ResponseEntity.ok(vaccinationRecordService.findByMedicId(medicId, pageable));
+        }
+        if (vaccineId != null) {
+            return ResponseEntity.ok(vaccinationRecordService.findByVaccineId(vaccineId, pageable));
+        }
+        if (status != null && !status.isBlank()) {
+            return ResponseEntity.ok(vaccinationRecordService.findByApplicationStatus(status, pageable));
+        }
+        if (date != null) {
+            Date dateFind = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            return ResponseEntity.ok(vaccinationRecordService.findByApplicationDate(dateFind, pageable));
+        }
+        if (startDate != null || endDate != null) {
+            if (startDate == null || endDate == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Informe startDate e endDate juntos");
+            }
+            Date startDateFind = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date endDateFind = Date.from(endDate.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
+            return ResponseEntity.ok(vaccinationRecordService.findByDateRange(startDateFind, endDateFind, pageable));
+        }
         return ResponseEntity.ok(vaccinationRecordService.findAll(pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByIdAnimal(
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @PathVariable Long idAnimal
-    ) {
-        return ResponseEntity.ok(vaccinationRecordService.findByAnimalId(idAnimal, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByIdMedic(
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @PathVariable Long medic
-    ) {
-        return ResponseEntity.ok(vaccinationRecordService.findByMedicId(medic, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByIdVaccine(
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @PathVariable Long vaccine
-    ) {
-        return ResponseEntity.ok(vaccinationRecordService.findByVaccineId(vaccine, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByDate(
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
-        Date dateFind = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return ResponseEntity.ok(vaccinationRecordService.findByApplicationDate(dateFind, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByBetweenDate(
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        Date startDateFind = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Date endDateFind = Date.from(endDate.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
-        return ResponseEntity.ok(vaccinationRecordService.findByDateRange(startDateFind, endDateFind, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<VaccinationRecordResponseDTO>> getVaccinationRecordByStatus(
-            @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @RequestParam String status
-    ) {
-        return ResponseEntity.ok(vaccinationRecordService.findByApplicationStatus(status, pageable));
     }
 
     @Override

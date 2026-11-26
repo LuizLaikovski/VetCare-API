@@ -40,9 +40,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         // Usar AntPathMatcher para verificar se a rota é pública
         org.springframework.util.AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
         String[] routesNoProtected = {
-                "/user/login",
-                "/user",
-                "/user/logout",
+                "/sessions",
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/v3/api-docs/**",
@@ -64,7 +62,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             ErrorDTO errorDTO = new ErrorDTO(
                     new Date(),
-                    "Token ausente ou formato inválido",
+                    "Token ausente ou formato invalido",
                     "Houve um erro ao chamar esta rota, o token não foi informado ou encontra-se inválido"
             );
 

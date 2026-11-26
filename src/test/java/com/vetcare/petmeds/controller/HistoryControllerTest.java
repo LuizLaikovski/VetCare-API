@@ -55,7 +55,7 @@ public class HistoryControllerTest {
     void createHistory_ShouldReturnCreated() throws Exception {
         when(historyService.create(any(HistoryRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/history")
+        mockMvc.perform(post("/histories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isCreated())
@@ -67,7 +67,7 @@ public class HistoryControllerTest {
     void updateHistory_ShouldReturnOk() throws Exception {
         when(historyService.update(anyLong(), any(HistoryRequestDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(put("/history/edit/1")
+        mockMvc.perform(put("/histories/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
@@ -79,7 +79,7 @@ public class HistoryControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(historyService.findAll(any())).thenReturn(page);
 
-        mockMvc.perform(get("/history/all"))
+        mockMvc.perform(get("/histories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
     }
@@ -88,7 +88,7 @@ public class HistoryControllerTest {
     void findById_ShouldReturnOk() throws Exception {
         when(historyService.findById(1L)).thenReturn(responseDTO);
 
-        mockMvc.perform(get("/history/1"))
+        mockMvc.perform(get("/histories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
     }
@@ -97,7 +97,7 @@ public class HistoryControllerTest {
     void deleteHistory_ShouldReturnOk() throws Exception {
         doNothing().when(historyService).delete(1L);
 
-        mockMvc.perform(delete("/history/1"))
+        mockMvc.perform(delete("/histories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Histórico deletado com sucesso"));
     }

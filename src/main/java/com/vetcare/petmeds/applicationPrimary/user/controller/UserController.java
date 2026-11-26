@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -20,9 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @AllArgsConstructor
 @Tag(name = "Usuario", description = "Gerenciamento de rotas para o usuario")
 public class UserController implements UserControllerInterface {
@@ -30,7 +33,11 @@ public class UserController implements UserControllerInterface {
     private UserService userService;
 
     @Override
-    public ResponseEntity<Page<UserEntity>> getALl(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+    public ResponseEntity<Page<UserEntity>> getALl(String email, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        if (email != null && !email.isBlank()) {
+            UserEntity user = userService.getUserByEmail(email);
+            return ResponseEntity.ok(new PageImpl<>(List.of(user), pageable, 1));
+        }
         return ResponseEntity.ok(userService.findAll(pageable));
     }
 
@@ -43,22 +50,6 @@ public class UserController implements UserControllerInterface {
     @Override
     public ResponseEntity<UserProfileDTO> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserByIdToDTO(id));
-    }
-
-    @Override
-    public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(userService.getUserByEmail(email));
-    }
-
-    @Override
-    public ResponseEntity<ResponseLoginDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        return ResponseEntity.ok(userService.login(loginRequestDTO.email(), loginRequestDTO.password()));
-    }
-
-    @Override
-    public ResponseEntity<ResponseLoginDTO> logout(@RequestHeader("Authorization") String authHeader) {
-        userService.logout(authHeader);
-        return ResponseEntity.ok(new ResponseLoginDTO("Logout com Sucesso"));
     }
 
     @Override
@@ -76,7 +67,7 @@ public class UserController implements UserControllerInterface {
             @PathVariable Long id,
             @RequestParam("image") MultipartFile image
     ) {
-        return new ResponseEntity(userService.uploadImageToUser(id, image), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.uploadImageToUser(id, image), HttpStatus.CREATED);
     }
 
     @Override

@@ -79,6 +79,9 @@ public class AnimalService {
     public ResponseEntity<Resource> getImage(Long idAnimal) {
         try {
             AnimalEntity animal =  getById(idAnimal);
+            if (animal.getImageId() == null) {
+                throw new ResourceNotFoundException("O Animal informado não possui imagem cadastrada!");
+            }
             ImageEntity image = imageService.findImageByIdToEntity(animal.getImageId());
 
             MediaType mediaType;
@@ -99,6 +102,8 @@ public class AnimalService {
                     )
                     .body(new ByteArrayResource(image.getDados()));
 
+        } catch (ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ResourceNotFoundException("Imagem não encontrada!", e);
         }
@@ -147,6 +152,8 @@ public class AnimalService {
                                     .build().toString()
                     )
                     .body(new ByteArrayResource(image.getDados()));
+        } catch (ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -171,10 +178,12 @@ public class AnimalService {
             animalRepository.save(animal);
 
             imageService.deletedImage(image.getId());
+        } catch (ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ImageStorageException("Houve um erro ao deletar a imagem!", e);
         }
-        return null;
+        return ResponseEntity.noContent().build();
     }
 
 }

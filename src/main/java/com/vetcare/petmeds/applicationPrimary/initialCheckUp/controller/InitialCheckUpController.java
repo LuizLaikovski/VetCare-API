@@ -12,13 +12,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/initialCheckUp")
+@RequestMapping("/initial-check-ups")
 @AllArgsConstructor
 @Tag(name = "Check-up Inicial", description = "Gerenciamento de rotas para os check-ups iniciais do animal")
 public class InitialCheckUpController implements InitialCheckUpControllerInterface {
@@ -35,31 +36,26 @@ public class InitialCheckUpController implements InitialCheckUpControllerInterfa
     }
 
     @Override
-    public ResponseEntity<Page<InitialCheckUpResponseDTO>> findAll(Pageable pageable) {
+    public ResponseEntity<Page<InitialCheckUpResponseDTO>> findAll(
+            Long animalId, Long veterinarianId, LocalDate start, LocalDate end, Pageable pageable) {
+        if (animalId != null) {
+            return ResponseEntity.ok(service.findByAnimalId(animalId, pageable));
+        }
+        if (veterinarianId != null) {
+            return ResponseEntity.ok(service.findByVeterinarianId(veterinarianId, pageable));
+        }
+        if (start != null || end != null) {
+            if (start == null || end == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Informe start e end juntos");
+            }
+            return ResponseEntity.ok(service.findByDateRange(start.atStartOfDay(), end.atTime(LocalTime.MAX), pageable));
+        }
         return ResponseEntity.ok(service.findAll(pageable));
     }
 
     @Override
     public ResponseEntity<InitialCheckUpResponseDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
-    }
-
-    @Override
-    public ResponseEntity<Page<InitialCheckUpResponseDTO>> findByAnimalId(@PathVariable Long animalId, Pageable pageable) {
-        return ResponseEntity.ok(service.findByAnimalId(animalId, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<InitialCheckUpResponseDTO>> findByVeterinarianId(@PathVariable Long veterinarianId, Pageable pageable) {
-        return ResponseEntity.ok(service.findByVeterinarianId(veterinarianId, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<InitialCheckUpResponseDTO>> findByDateRange(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end,
-            Pageable pageable) {
-        return ResponseEntity.ok(service.findByDateRange(start.atStartOfDay(), end.atTime(LocalTime.MAX), pageable));
     }
 
     @Override

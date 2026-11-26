@@ -18,7 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 @RestController
-@RequestMapping("/files-test")
+@RequestMapping("/files")
 public class FileStorageController implements FileStorageDoc {
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorageController.class);
@@ -26,13 +26,13 @@ public class FileStorageController implements FileStorageDoc {
     @Autowired
     private FileStorageService fileStorageService;
 
-    @PostMapping("/upload")
+    @PostMapping
     @Override
     public UploadFileResponseDTO uploadFile(@RequestParam("file") MultipartFile file) {
         var fileName = fileStorageService.storeFile(file);
         logger.debug("Nome do arquivo: " + fileName);
         var fileDownloadURI = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/files-test/download").path(fileName).toUriString();
+                .path("/files/download").path(fileName).toUriString();
 
         logger.debug("URI de download do arquivo: " + fileDownloadURI);
         return new UploadFileResponseDTO(

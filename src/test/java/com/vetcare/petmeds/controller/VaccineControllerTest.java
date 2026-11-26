@@ -52,7 +52,7 @@ public class VaccineControllerTest {
     void getVaccineById_ShouldReturnOk() throws Exception {
         when(vaccineService.getById(1L)).thenReturn(vaccine);
 
-        mockMvc.perform(get("/vaccine/1"))
+        mockMvc.perform(get("/vaccines/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.vaccineName").value("Raiva"));
     }
@@ -62,7 +62,7 @@ public class VaccineControllerTest {
         org.springframework.data.domain.Page<VaccineEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(vaccine));
         when(vaccineService.getByName(org.mockito.ArgumentMatchers.eq("Raiva"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/vaccine/name/Raiva"))
+        mockMvc.perform(get("/vaccines").param("name", "Raiva"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].vaccineName").value("Raiva"));
     }
@@ -72,7 +72,7 @@ public class VaccineControllerTest {
         org.springframework.data.domain.Page<VaccineEntity> page = new org.springframework.data.domain.PageImpl<>(Arrays.asList(vaccine));
         when(vaccineService.getAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/vaccine/all"))
+        mockMvc.perform(get("/vaccines"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].vaccineName").value("Raiva"));
     }
@@ -81,7 +81,7 @@ public class VaccineControllerTest {
     void createVaccine_ShouldReturnCreated() throws Exception {
         when(vaccineService.createVaccine(any(VaccineEntity.class))).thenReturn(vaccine);
 
-        mockMvc.perform(post("/vaccine")
+        mockMvc.perform(post("/vaccines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(vaccine)))
                 .andExpect(status().isCreated())
@@ -92,7 +92,7 @@ public class VaccineControllerTest {
     void updateVaccine_ShouldReturnOk() throws Exception {
         when(vaccineService.updateVaccine(any(VaccineEntity.class))).thenReturn(vaccine);
 
-        mockMvc.perform(put("/vaccine/1")
+        mockMvc.perform(put("/vaccines/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(vaccine)))
                 .andExpect(status().isOk())
@@ -103,7 +103,7 @@ public class VaccineControllerTest {
     void deleteVaccine_ShouldReturnNoContent() throws Exception {
         doNothing().when(vaccineService).delete(1L);
 
-        mockMvc.perform(delete("/vaccine/1"))
+        mockMvc.perform(delete("/vaccines/1"))
                 .andExpect(status().isNoContent());
     }
 }

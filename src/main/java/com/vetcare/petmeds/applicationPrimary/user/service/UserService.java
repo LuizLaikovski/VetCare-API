@@ -180,6 +180,9 @@ public class UserService {
     public ResponseEntity<Resource> getByImage(Long id) {
         try {
             UserEntity user = getUserById(id);
+            if (user.getImageId() == null) {
+                throw new ResourceNotFoundException("Usuário não possui imagem cadastrada!");
+            }
             ImageEntity image = imageService.findImageByIdToEntity(user.getImageId());
 
             MediaType mediaType;
@@ -200,7 +203,7 @@ public class UserService {
                     .body(new ByteArrayResource(image.getDados()));
 
         } catch (ResourceNotFoundException e) {
-            throw new ResourceNotFoundException("Usuario não encontrado", e);
+            throw e;
         }
     }
 

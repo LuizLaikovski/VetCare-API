@@ -53,7 +53,7 @@ public class AnimalControllerTest {
     void createAnimal_ShouldReturnCreated() throws Exception {
         when(animalService.createNewAnimal(any(AnimalEntity.class))).thenReturn(animal);
 
-        mockMvc.perform(post("/animal")
+        mockMvc.perform(post("/animals")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(animal)))
                 .andExpect(status().isCreated())
@@ -65,19 +65,17 @@ public class AnimalControllerTest {
         ResponseDTO responseDTO = new ResponseDTO(new Date(), "Medicamento salvo com sucesso", "Medicamento salvo com sucesso");
         when(animalService.setMedicine(1L, 10L)).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/animal/addMedicine")
-                        .param("idAnimal", "1")
-                        .param("idMedicine", "10"))
+        mockMvc.perform(put("/animals/1/medicines/10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Medicamento salvo com sucesso"));
     }
 
     @Test
     void getAllAnimals_ShouldReturnOk() throws Exception {
-        var page = new PageImpl<>(Arrays.asList(animal));
+        var page = new PageImpl<>(Arrays.asList(new com.vetcare.petmeds.applicationPrimary.animal.dto.AnimalDescriptionDTO("Rex", Specie.Cachorro, null, null, null, null, null)));
         when(animalService.getAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/animal/all"))
+        mockMvc.perform(get("/animals"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Rex"));
     }
@@ -86,17 +84,21 @@ public class AnimalControllerTest {
     void getAnimalById_ShouldReturnOk() throws Exception {
         when(animalService.getById(1L)).thenReturn(animal);
 
-        mockMvc.perform(get("/animal/id/1"))
+        mockMvc.perform(get("/animals/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Rex"));
     }
 
     @Test
     void getAnimalByName_ShouldReturnOk() throws Exception {
+        animal.setGender(com.vetcare.petmeds.applicationPrimary.animal.entity.Sex.MAS);
+        var owner = new com.vetcare.petmeds.applicationPrimary.user.entity.UserEntity();
+        owner.setName("Maria");
+        animal.setOwner(owner);
         var page = new PageImpl<>(Arrays.asList(animal));
         when(animalService.getByName(org.mockito.ArgumentMatchers.eq("Rex"), any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/animal/name/Rex"))
+        mockMvc.perform(get("/animals").param("name", "Rex"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Rex"));
     }
@@ -105,7 +107,7 @@ public class AnimalControllerTest {
     void updateAnimal_ShouldReturnOk() throws Exception {
         when(animalService.updateAnimal(anyLong(), any(AnimalEntity.class))).thenReturn(animal);
 
-        mockMvc.perform(put("/animal/edit/1")
+        mockMvc.perform(put("/animals/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(animal)))
                 .andExpect(status().isOk())
@@ -116,7 +118,22 @@ public class AnimalControllerTest {
     void deleteAnimal_ShouldReturnNoContent() throws Exception {
         org.mockito.Mockito.doNothing().when(animalService).deleteById(1L);
 
-        mockMvc.perform(delete("/animal/1"))
+        mockMvc.perform(delete("/animals/1"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getAllAnimals_WithoutName_ShouldNotCallSearch() throws Exception {
+        when(animalService.getAll(any(org.springframework.data.domain.Pageable.class))).thenReturn(new PageImpl<>(java.util.List.of()));
+
+        mockMvc.perform(get("/animals")).andExpect(status().isOk());
+
+        org.mockito.Mockito.verify(animalService, org.mockito.Mockito.never()).getByName(any(), any());
+    }
+
+    @Test
+    void oldRoutes_ShouldNotExist() throws Exception {
+        mockMvc.perform(get("/animal/all")).andExpect(status().is4xxClientError());
+        mockMvc.perform(post("/animal/addMedicine")).andExpect(status().is4xxClientError());
     }
 }

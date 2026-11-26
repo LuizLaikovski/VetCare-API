@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/history")
+@RequestMapping("/histories")
 @AllArgsConstructor
 @Tag(name = "Histórico", description = "Gerenciamento de rotas para o histórico do animal")
 public class HistoryController implements HistoryControllerInterface {

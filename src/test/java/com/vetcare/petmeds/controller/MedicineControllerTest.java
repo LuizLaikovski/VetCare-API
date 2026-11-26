@@ -56,7 +56,7 @@ public class MedicineControllerTest {
     void getMedicineById_ShouldReturnOk() throws Exception {
         when(medicineService.getMedicineById(1L)).thenReturn(responseDTO);
 
-        mockMvc.perform(get("/medicine/1"))
+        mockMvc.perform(get("/medicines/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Paracetamol"));
     }
@@ -66,7 +66,7 @@ public class MedicineControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(medicineService.getAllMedicines(any(org.springframework.data.domain.Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/medicine/all"))
+        mockMvc.perform(get("/medicines"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Paracetamol"));
     }
@@ -75,7 +75,7 @@ public class MedicineControllerTest {
     void createMedicine_ShouldReturnCreated() throws Exception {
         when(medicineService.createMedicine(any(MedicineEntity.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/medicine")
+        mockMvc.perform(post("/medicines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(medicine)))
                 .andExpect(status().isCreated())
@@ -86,7 +86,7 @@ public class MedicineControllerTest {
     void updateMedicine_ShouldReturnOk() throws Exception {
         when(medicineService.updateMedicine(anyLong(), any(MedicineEntity.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(put("/medicine/1")
+        mockMvc.perform(put("/medicines/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(medicine)))
                 .andExpect(status().isOk())
@@ -98,7 +98,7 @@ public class MedicineControllerTest {
         ResponseDTO res = new ResponseDTO(new Date(), "Deletado", "Medicamento deleteado com sucesso");
         when(medicineService.deleteMedicine(1L)).thenReturn(res);
 
-        mockMvc.perform(delete("/medicine/1"))
+        mockMvc.perform(delete("/medicines/1"))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.message").value("Deletado"));
     }

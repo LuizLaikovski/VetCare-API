@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/animal")
+@RequestMapping("/animals")
 @AllArgsConstructor
 @Tag(name = "Animal", description = "Gerenciamento de rotas para os animais")
 public class AnimalController implements AnimalControllerInterface {
@@ -36,8 +36,8 @@ public class AnimalController implements AnimalControllerInterface {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> addMedicine(@RequestParam Long idAnimal, @RequestParam Long idMedicine) {
-        return ResponseEntity.ok(animalService.setMedicine(idAnimal, idMedicine));
+    public ResponseEntity<ResponseDTO> addMedicine(@PathVariable Long id, @PathVariable Long medicineId) {
+        return ResponseEntity.ok(animalService.setMedicine(id, medicineId));
     }
 
     @Override
@@ -51,18 +51,16 @@ public class AnimalController implements AnimalControllerInterface {
     }
 
     @Override
-    public ResponseEntity<Page<AnimalDescriptionDTO>> getAllAnimals(Pageable pageable) {
+    public ResponseEntity<Page<AnimalDescriptionDTO>> getAllAnimals(String name, Pageable pageable) {
+        if (name != null && !name.isBlank()) {
+            return ResponseEntity.ok(animalService.getByName(name, pageable).map(AnimalDescriptionDTO::new));
+        }
         return ResponseEntity.ok(animalService.getAll(pageable));
     }
 
     @Override
     public ResponseEntity<Resource> getimage(Long id) {
         return animalService.getImage(id);
-    }
-
-    @Override
-    public ResponseEntity<Page<AnimalEntity>> getByName(@PathVariable String name, Pageable pageable) {
-        return ResponseEntity.ok(animalService.getByName(name, pageable));
     }
 
     @Override

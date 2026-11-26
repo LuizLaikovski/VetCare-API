@@ -1,7 +1,7 @@
 api:
   security:
     token:
-      secret: change_me_to_a_very_secure_random_key_123456
+      secret: ${JWT_SECRET:change_me_to_a_very_secure_random_key_123456}
 
 file:
   upload-dir: src/main/java/com/vetcare/petmeds/files
@@ -27,14 +27,14 @@ spring:
   datasource:
     arq:
       driver-class-name: org.postgresql.Driver
-      password: password
-      url: jdbc:postgresql://localhost:5432/vetcare_arq
-      username: postgres
+      password: ${DB_PASSWORD:password}
+      url: ${DB_ARQ_URL:jdbc:postgresql://localhost:5432/vetcare_arq}
+      username: ${DB_USER:postgres}
     primary:
       driver-class-name: org.postgresql.Driver
-      password: password
-      url: jdbc:postgresql://localhost:5432/vetcare_app
-      username: postgres
+      password: ${DB_PASSWORD:password}
+      url: ${DB_URL:jdbc:postgresql://localhost:5432/vetcare_app}
+      username: ${DB_USER:postgres}
 
   flyway:
     baseline-on-migrate: true
@@ -71,3 +71,9 @@ spring:
 springdoc:
   swagger-ui:
     path: /doc
+
+app:
+  admin:
+    name: ${ADMIN_NAME:Administrador}
+    email: ${ADMIN_EMAIL:admin@email.com}
+    password: ${ADMIN_PASSWORD:Admin123}

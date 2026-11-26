@@ -56,7 +56,7 @@ public class UserControllerTest {
         Page<UserEntity> userPage = new PageImpl<>(Arrays.asList(user));
         when(userService.findAll(any(Pageable.class))).thenReturn(userPage);
 
-        mockMvc.perform(get("/user/all"))
+        mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("John Doe"));
     }
@@ -67,7 +67,7 @@ public class UserControllerTest {
 
         UserDTO userDTO = new UserDTO("John Doe", "john@example.com", "password123", TypeUser.CLIENT);
 
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isCreated())
@@ -76,39 +76,29 @@ public class UserControllerTest {
 
     @Test
     void getUserById_ShouldReturnUser() throws Exception {
-        when(userService.getUserById(1L)).thenReturn(user);
+        when(userService.getUserByIdToDTO(1L)).thenReturn(new com.vetcare.petmeds.applicationPrimary.user.dto.UserProfileDTO(user));
 
-        mockMvc.perform(get("/user/1"))
+        mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("John Doe"));
-    }
-
-    @Test
-    void login_ShouldReturnOk() throws Exception {
-        LoginRequestDTO loginRequest = new LoginRequestDTO("john@example.com", "password123");
-        when(userService.login(anyString(), anyString())).thenReturn(new ResponseLoginDTO("Login realizado com sucesso!"));
-
-        mockMvc.perform(post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Login realizado com sucesso!"));
     }
 
     @Test
     void deleteUser_ShouldReturnOk() throws Exception {
         when(userService.deleteUser(1L)).thenReturn(new ResponseLoginDTO("O usuario foi removido com sucesso!"));
 
-        mockMvc.perform(delete("/user/1"))
+        mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response").value("O usuario foi removido com sucesso!"));
     }
 
     @Test
-    void logout_ShouldReturnOk() throws Exception {
-        mockMvc.perform(delete("/user/logout")
-                        .header("Authorization", "Bearer token"))
+    void getAll_WithEmail_ShouldReturnSingleItemPage() throws Exception {
+        when(userService.getUserByEmail("john@example.com")).thenReturn(user);
+
+        mockMvc.perform(get("/users").param("email", "john@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Logout com Sucesso"));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 }

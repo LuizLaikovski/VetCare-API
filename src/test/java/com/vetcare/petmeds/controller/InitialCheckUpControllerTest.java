@@ -57,7 +57,7 @@ public class InitialCheckUpControllerTest {
     void createCheckUp_ShouldReturnCreated() throws Exception {
         when(initialCheckUpService.create(any(InitialCheckUpDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/initialCheckUp")
+        mockMvc.perform(post("/initial-check-ups")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(checkUpDTO)))
@@ -69,7 +69,7 @@ public class InitialCheckUpControllerTest {
     void updateCheckUp_ShouldReturnOk() throws Exception {
         when(initialCheckUpService.update(anyLong(), any(InitialCheckUpDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(put("/initialCheckUp/edit/1")
+        mockMvc.perform(put("/initial-check-ups/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(checkUpDTO)))
@@ -82,7 +82,7 @@ public class InitialCheckUpControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(initialCheckUpService.findAll(any())).thenReturn(page);
 
-        mockMvc.perform(get("/initialCheckUp/all")
+        mockMvc.perform(get("/initial-check-ups")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
@@ -92,7 +92,7 @@ public class InitialCheckUpControllerTest {
     void findById_ShouldReturnOk() throws Exception {
         when(initialCheckUpService.findById(1L)).thenReturn(responseDTO);
 
-        mockMvc.perform(get("/initialCheckUp/1")
+        mockMvc.perform(get("/initial-check-ups/1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
@@ -103,7 +103,7 @@ public class InitialCheckUpControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(initialCheckUpService.findByAnimalId(anyLong(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/initialCheckUp/animal/1")
+        mockMvc.perform(get("/initial-check-ups").param("animalId", "1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
@@ -114,7 +114,7 @@ public class InitialCheckUpControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(initialCheckUpService.findByVeterinarianId(anyLong(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/initialCheckUp/vet/1")
+        mockMvc.perform(get("/initial-check-ups").param("veterinarianId", "1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
@@ -125,7 +125,7 @@ public class InitialCheckUpControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(initialCheckUpService.findByDateRange(any(), any(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/initialCheckUp/date-range")
+        mockMvc.perform(get("/initial-check-ups")
                         .param("start", "2026-01-01")
                         .param("end", "2026-12-31")
                         .accept(MediaType.APPLICATION_JSON))
@@ -137,7 +137,7 @@ public class InitialCheckUpControllerTest {
     void deleteCheckUp_ShouldReturnOk() throws Exception {
         doNothing().when(initialCheckUpService).delete(1L);
 
-        mockMvc.perform(delete("/initialCheckUp/1")
+        mockMvc.perform(delete("/initial-check-ups/1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Checkup deletado com sucesso"));

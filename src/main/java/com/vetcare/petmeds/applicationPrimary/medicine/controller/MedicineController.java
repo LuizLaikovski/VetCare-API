@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/medicine")
+@RequestMapping("/medicines")
 @AllArgsConstructor
 @Tag(name = "Medicamentos", description = "Gerenciamento de rotas para os medicamentos")
 public class MedicineController implements MedicineControllerInterface {
@@ -26,12 +26,10 @@ public class MedicineController implements MedicineControllerInterface {
     }
 
     @Override
-    public ResponseEntity<Page<MedicineResponseDTO>> getMedicineByName(@PathVariable String name, Pageable pageable) {
-        return ResponseEntity.ok(medicineService.getByName(name, pageable));
-    }
-
-    @Override
-    public ResponseEntity<Page<MedicineResponseDTO>> getAllMedicine(Pageable pageable) {
+    public ResponseEntity<Page<MedicineResponseDTO>> getAllMedicine(String name, Pageable pageable) {
+        if (name != null && !name.isBlank()) {
+            return ResponseEntity.ok(medicineService.getByName(name, pageable));
+        }
         return ResponseEntity.ok(medicineService.getAllMedicines(pageable));
     }
 

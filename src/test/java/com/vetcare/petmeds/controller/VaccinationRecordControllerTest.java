@@ -61,7 +61,7 @@ public class VaccinationRecordControllerTest {
     void create_ShouldReturnCreated() throws Exception {
         when(vaccinationRecordService.createVaccinationRecord(any(VaccinationRecordCreateDTO.class))).thenReturn(responseDTO);
 
-        mockMvc.perform(post("/vaccination-record")
+        mockMvc.perform(post("/vaccination-records")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createDTO)))
                 .andExpect(status().isCreated())
@@ -72,7 +72,7 @@ public class VaccinationRecordControllerTest {
     void findById_ShouldReturnOk() throws Exception {
         when(vaccinationRecordService.findById(1L)).thenReturn(responseDTO);
 
-        mockMvc.perform(get("/vaccination-record/id/1"))
+        mockMvc.perform(get("/vaccination-records/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
     }
@@ -82,7 +82,7 @@ public class VaccinationRecordControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(vaccinationRecordService.findAll(any())).thenReturn(page);
 
-        mockMvc.perform(get("/vaccination-record/all"))
+        mockMvc.perform(get("/vaccination-records"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
     }
@@ -92,7 +92,7 @@ public class VaccinationRecordControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(vaccinationRecordService.findByAnimalId(anyLong(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/vaccination-record/animal/1"))
+        mockMvc.perform(get("/vaccination-records").param("animalId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
     }
@@ -102,7 +102,7 @@ public class VaccinationRecordControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(vaccinationRecordService.findByMedicId(anyLong(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/vaccination-record/medic/1"))
+        mockMvc.perform(get("/vaccination-records").param("medicId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
     }
@@ -112,7 +112,7 @@ public class VaccinationRecordControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(vaccinationRecordService.findByVaccineId(anyLong(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/vaccination-record/vaccine/1"))
+        mockMvc.perform(get("/vaccination-records").param("vaccineId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
     }
@@ -122,7 +122,7 @@ public class VaccinationRecordControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(vaccinationRecordService.findByApplicationDate(any(Date.class), any())).thenReturn(page);
 
-        mockMvc.perform(get("/vaccination-record/date")
+        mockMvc.perform(get("/vaccination-records")
                         .param("date", "2026-01-01"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
@@ -133,7 +133,7 @@ public class VaccinationRecordControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(vaccinationRecordService.findByDateRange(any(Date.class), any(Date.class), any())).thenReturn(page);
 
-        mockMvc.perform(get("/vaccination-record/between-date")
+        mockMvc.perform(get("/vaccination-records")
                         .param("startDate", "2026-01-01")
                         .param("endDate", "2026-12-31"))
                 .andExpect(status().isOk())
@@ -145,7 +145,7 @@ public class VaccinationRecordControllerTest {
         var page = new PageImpl<>(Arrays.asList(responseDTO));
         when(vaccinationRecordService.findByApplicationStatus(anyString(), any())).thenReturn(page);
 
-        mockMvc.perform(get("/vaccination-record/status")
+        mockMvc.perform(get("/vaccination-records")
                         .param("status", "APPLIED"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1L));
@@ -160,7 +160,7 @@ public class VaccinationRecordControllerTest {
         editRequest.setNumOfDoses(1);
         editRequest.setObservation("Test");
 
-        mockMvc.perform(put("/vaccination-record/1")
+        mockMvc.perform(put("/vaccination-records/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(editRequest)))
                 .andExpect(status().isOk())
